@@ -1,0 +1,25 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  template_monster_id: 1
+  price: 1
+  screenshot_list: 
+  authors_id: 1
+  keywords_list: 
+  categories_list: 
+  sources: MyString
+  type: 
+  description: MyString
+  pages: 
+
+two:
+  template_monster_id: 1
+  price: 1
+  screenshot_list: 
+  authors_id: 1
+  keywords_list: 
+  categories_list: 
+  sources: MyString
+  type: 
+  description: MyString
+  pages: 

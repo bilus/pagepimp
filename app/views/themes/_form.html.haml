@@ -1,0 +1,40 @@
+= form_for @theme do |f|
+  - if @theme.errors.any?
+    #error_explanation
+      %h2= "#{pluralize(@theme.errors.count, "error")} prohibited this theme from being saved:"
+      %ul
+        - @theme.errors.full_messages.each do |msg|
+          %li= msg
+
+  .field
+    = f.label :template_monster_id
+    = f.number_field :template_monster_id
+  .field
+    = f.label :price
+    = f.number_field :price
+  .field
+    = f.label :screenshot_list
+    = f.text_field :screenshot_list
+  .field
+    = f.label :authors_id
+    = f.number_field :authors_id
+  .field
+    = f.label :keywords_list
+    = f.text_field :keywords_list
+  .field
+    = f.label :categories_list
+    = f.text_field :categories_list
+  .field
+    = f.label :sources
+    = f.text_field :sources
+  .field
+    = f.label :type
+    = f.text_field :type
+  .field
+    = f.label :description
+    = f.text_field :description
+  .field
+    = f.label :pages
+    = f.text_field :pages
+  .actions
+    = f.submit 'Save'

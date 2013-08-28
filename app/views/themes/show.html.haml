@@ -1,0 +1,36 @@
+%p#notice= notice
+
+%p
+  %b Template monster:
+  = @theme.template_monster_id
+%p
+  %b Price:
+  = @theme.price
+%p
+  %b Screenshot list:
+  = @theme.screenshot_list
+%p
+  %b Authors:
+  = @theme.authors_id
+%p
+  %b Keywords list:
+  = @theme.keywords_list
+%p
+  %b Categories list:
+  = @theme.categories_list
+%p
+  %b Sources:
+  = @theme.sources
+%p
+  %b Type:
+  = @theme.type
+%p
+  %b Description:
+  = @theme.description
+%p
+  %b Pages:
+  = @theme.pages
+
+= link_to 'Edit', edit_theme_path(@theme)
+\|
+= link_to 'Back', themes_path
