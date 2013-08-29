@@ -35,6 +35,11 @@
 %br
 
 .row
+  .span3
+    = @themes.size
+    Themes available
+
+.row
   = render @themes
 
 = link_to 'New Theme', new_theme_path

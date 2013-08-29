@@ -2,13 +2,11 @@
   .id
     Id
     = theme.template_monster_id
-  .price
-    Price
-    = theme.price
+  -#.price
+  -#  Price
+  -#  = theme.price
 
-  -#=# form_tag '/orders/new', id: 'themes_form', method: :get do
-  -#=# form_tag new_theme_order_path(theme), method: :get do
-  -#  -#= hidden_field_tag 'theme_id', theme.id
-  -#  =# submit_tag 'Order'
-  .images
-    %img{src: theme.screenshot_list[1], width: 215, height: 166 }
+  -#= link_to "Order", themes_path(theme: theme.attributes), method: :post, remote: true
+  = link_to image_tag(theme.screenshot_list[1], width: 215, height: 166), themes_path(theme: theme.attributes), method: :post, remote: true
+  -#.images
+  -#  %img{src: theme.screenshot_list[1], width: 215, height: 166 }

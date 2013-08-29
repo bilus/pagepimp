@@ -1,0 +1,1 @@
+window.location.href = "<%= new_theme_order_path(@theme) %>";

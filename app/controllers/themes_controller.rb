@@ -2,24 +2,13 @@ class ThemesController < ApplicationController
   # GET /themes
   # GET /themes.json
   def index
-    @themes = Theme.harvest
+    @themes = Theme.all
 
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @themes }
     end
   end
-
-  def harvest
-    @themes = Theme.harvest
-
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @themes }
-    end
-  end
-
-
 
   # GET /themes/1
   # GET /themes/1.json
@@ -57,6 +46,7 @@ class ThemesController < ApplicationController
       if @theme.save
         format.html { redirect_to @theme, notice: 'Theme was successfully created.' }
         format.json { render json: @theme, status: :created, location: @theme }
+        format.js
       else
         format.html { render action: "new" }
         format.json { render json: @theme.errors, status: :unprocessable_entity }

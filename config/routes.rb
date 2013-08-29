@@ -1,8 +1,8 @@
 Pagepimp::Application.routes.draw do
   resources :orders
-
-
-  resources :themes
+  resources :themes do
+    resources :orders
+  end
 
 
   # The priority is based upon order of creation:
@@ -13,7 +13,6 @@ Pagepimp::Application.routes.draw do
   # Keep in mind you can assign values other than :controller and :action
 
   # Sample of named route:
-     match 'monster/harvest' => 'themes#harvest'
   # This route can be invoked with purchase_url(:id => product.id)
 
   # Sample resource route (maps HTTP verbs to controller actions automatically):
