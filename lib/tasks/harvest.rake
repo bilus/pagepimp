@@ -16,13 +16,15 @@ namespace :harvest do
 
     #begin
 
-      harvest_themes(iterator, chunk_size)
+      #harvest_themes(iterator, chunk_size)
 
 
-      Theme.all.each{|item| update_keywords(item)}
+      #Theme.all.each{|item| update_keywords(item)}
 
 
-      Theme.all.each{|item| update_categories(item, categories)}
+      #Theme.all.each{|item| update_categories(item, categories)}
+
+      Theme.all.each{|item| update_complex_theme_info(item) }
 
       items = Theme.all
       items.each{ |i| puts i.to_yaml }
@@ -62,7 +64,7 @@ namespace :harvest do
     "http://www.templatemonster.com/webapi/template_categories.php?from=#{theme_id}&to=#{theme_id}?&delim=;&login=criticue&webapipassword=c0931ab33ff801e711b00bb3c5e9af1e"
   end
 
-  def prepare_complex_template_info(theme_id)
+  def prepare_complex_theme_info(theme_id)
     "http://www.templatemonster.com/webapi/template_info3.php?delim=;&template_number=#{theme_id}&list_delim=;&list_begin=[&list_end=]&login=criticue&webapipassword=c0931ab33ff801e711b00bb3c5e9af1e"
   end
 
@@ -93,8 +95,25 @@ namespace :harvest do
   end
 
   def update_complex_theme_info(theme)
-    result = URI.parse(prepare_complex_template_info(theme.template_monster_id)).read
-
+    result = URI.parse(prepare_complex_theme_info(theme.template_monster_id)).read
+    result
+    .split("\r\n")
+    .map { |r| r.split(";") }
+    .map { |result|
+        puts "complex result item" + result.inspect
+        {
+        id: result[1],
+        date_of_addition: result[3],
+        sources: result[21],
+        theme_type: result[22],
+        description: result[23]}
+    }
+    .map{ |item|
+      theme.sources = item[:sources]
+      theme.theme_type = item[:theme_type]
+      theme.description = item[:description]
+      theme.save
+    }
   end
 
   def harvest_themes(iterator, chunk_size)

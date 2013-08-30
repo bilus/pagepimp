@@ -1,7 +1,7 @@
 require 'open-uri'
 
 class Theme < ActiveRecord::Base
-  attr_accessible :active, :authors_id, :categories_list, :date_of_addition, :description, :exclusive_price, :keywords_list, :pages, :price, :screenshot_list, :sources, :template_monster_id, :type, :created_at, :updated_at
+  attr_accessible :active, :authors_id, :categories_list, :date_of_addition, :description, :exclusive_price, :keywords_list, :pages, :price, :screenshot_list, :sources, :template_monster_id, :theme_type, :created_at, :updated_at
 
   has_many :orders
   accepts_nested_attributes_for :orders
