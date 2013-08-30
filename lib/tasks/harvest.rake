@@ -11,25 +11,21 @@ namespace :harvest do
     categories = prepare_categories
 
     iterator = 0
-    chunk_size = 500
-    #items_counter = 0
+    chunk_size = 1000
+    items_counter = 0
 
     #begin
 
-      #harvest_themes(iterator, chunk_size)
+      harvest_themes(iterator, chunk_size)
 
 
       #Theme.all.each{|item| update_keywords(item)}
-
-
       #Theme.all.each{|item| update_categories(item, categories)}
+      #Theme.all.each{|item| update_complex_theme_info(item) }
 
-      Theme.all.each{|item| update_complex_theme_info(item) }
+      #items = Theme.all
+      #items.each{ |i| puts i.to_yaml }
 
-      items = Theme.all
-      items.each{ |i| puts i.to_yaml }
-
-      #Theme.all.each{|item| puts item.inspect}
 
       puts 'theme count ' + Theme.count.to_s
 
@@ -50,6 +46,11 @@ namespace :harvest do
     puts "harvest update"
   end
 
+  task :update_keywords => :environment do
+    Theme.all.each{|item| update_keywords(item) if item[:keywords_list].nil? }
+  end
+
+
   def prepare_request_link(iterator, chunk_size)
     from = iterator
     to = iterator + chunk_size - 1
@@ -65,7 +66,7 @@ namespace :harvest do
   end
 
   def prepare_complex_theme_info(theme_id)
-    "http://www.templatemonster.com/webapi/template_info3.php?delim=;&template_number=#{theme_id}&list_delim=;&list_begin=[&list_end=]&login=criticue&webapipassword=c0931ab33ff801e711b00bb3c5e9af1e"
+    "http://www.templatemonster.com/webapi/template_info3.php?delim=@&template_number=#{theme_id}&list_delim=;&list_begin=[&list_end=]&login=criticue&webapipassword=c0931ab33ff801e711b00bb3c5e9af1e"
   end
 
   def prepare_categories
@@ -98,17 +99,19 @@ namespace :harvest do
     result = URI.parse(prepare_complex_theme_info(theme.template_monster_id)).read
     result
     .split("\r\n")
-    .map { |r| r.split(";") }
+    .map { |r| r.split("@") }
     .map { |result|
-        puts "complex result item" + result.inspect
         {
-        id: result[1],
+        id: result[0],
         date_of_addition: result[3],
-        sources: result[21],
-        theme_type: result[22],
-        description: result[23]}
+        sources: result[20].sub(/^\[/, "").sub(/]$/, "").split(','),
+        theme_type: result[21],
+        description: result[22]
+        }
     }
     .map{ |item|
+      puts item.inspect
+
       theme.sources = item[:sources]
       theme.theme_type = item[:theme_type]
       theme.description = item[:description]
@@ -118,12 +121,12 @@ namespace :harvest do
 
   def harvest_themes(iterator, chunk_size)
     link = prepare_request_link(iterator, chunk_size)
-
     result = URI.parse(link).read
+
     result
     .split("\r\n")
     .map { |r| r.split(";") }
-    .delete_if{ |item| Theme.where(template_monster_id: item[0], date_of_addition: item[3]) }
+    .delete_if{ |item| Theme.where(template_monster_id: item[0]).present? }
     .map { |result| {
         template_monster_id: result[0],
         price: result[1],
@@ -139,7 +142,7 @@ namespace :harvest do
         screenshot_list: result[15].sub(/^\{/, "").sub(/}$/, "").split(',')
     } }
     .delete_if { |item| (
-    item[:is_adult] == "1" ||
+        item[:is_adult] == "1" ||
         item[:is_flash] == "1" ||
         item[:is_unique_logo] == "1"  ||
         item[:is_non_unique_logo] == "1" ||
@@ -155,11 +158,10 @@ namespace :harvest do
       item.delete(:is_non_unique_corporate)
       item
     }
-    .map {|item|
-      item.merge(active: true)
-    }
-    .map {|item| Theme.new(item)}
-    .each {|item| item.save}
+    .map { |item| item.merge(active: true) }
+    .map { |item| Theme.new(item) }
+    .each { |item| item.save }
+
   end
 
   task :flush => :environment do
