@@ -27,8 +27,7 @@ class OrdersController < ApplicationController
   # GET /orders/new
   # GET /orders/new.json
   def new
-    @theme.save
-    @order = @theme.orders.new
+    @order = @theme.orders.build
 
     respond_to do |format|
       format.html # new.html.erb

@@ -2,7 +2,7 @@ class ThemesController < ApplicationController
   # GET /themes
   # GET /themes.json
   def index
-    @themes = Theme.all_from_templatemonster
+    @themes = Theme.all
 
     respond_to do |format|
       format.html # index.html.erb
