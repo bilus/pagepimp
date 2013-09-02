@@ -12,6 +12,10 @@ gem 'therubyracer'
 gem 'less-rails'
 gem "twitter-bootstrap-rails", "~> 2.2.8"
 
+gem "will_paginate"
+
+gem "devise"
+
 
 
 # Gems used only for assets and not required

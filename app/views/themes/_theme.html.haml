@@ -2,11 +2,33 @@
   .id
     Id
     = theme.template_monster_id
+
+  .active
+    - if theme.active == 1
+      Active
+    - else
+      Not active
+
   -#.price
   -#  Price
   -#  = theme.price
+  -#.keywords
+  -#  Keywords
+  -#  = theme.keywords_list
+  -#.categories
+  -#  Categories
+  -#  = theme.categories_list
+
+  = if user_signed_in?
+    = form_for theme, method: :put, remote: true do |f|
+      = f.hidden_field :active, value: false
+      = f.submit "Disable"
+
+
+    = link_to "Disable", theme_path(theme, active: false), method: :put
+
 
   -#= link_to "Order", themes_path(theme: theme.attributes), method: :post, remote: true
-  = link_to image_tag(theme.screenshot_list[1], width: 215, height: 166), themes_path(theme: theme.attributes), method: :post, remote: true
+  = link_to image_tag(theme.screenshot_list[1], width: 215, height: 166), new_theme_order_path(theme)
   -#.images
   -#  %img{src: theme.screenshot_list[1], width: 215, height: 166 }

@@ -1,4 +1,6 @@
 Pagepimp::Application.routes.draw do
+  devise_for :users
+
   resources :orders
   resources :themes do
     resources :orders

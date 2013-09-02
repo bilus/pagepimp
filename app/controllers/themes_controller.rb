@@ -2,11 +2,12 @@ class ThemesController < ApplicationController
   # GET /themes
   # GET /themes.json
   def index
-    @themes = Theme.all
+    @themes = Theme.page(params[:page]).per_page(15)
 
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @themes }
+      format.js
     end
   end
 

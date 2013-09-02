@@ -1,45 +1,9 @@
 %h1 Listing themes
 
--#%table
-  %tr
-    %th Template monster
-    %th Price
-    %th Screenshot list
-    %th Authors
-    %th Keywords list
-    %th Categories list
-    %th Sources
-    %th Type
-    %th Description
-    %th Pages
-    %th
-    %th
-    %th
+.row
+  #themes
+    = render @themes
 
-  - @themes.each do |theme|
-    %tr
-      %td= theme.template_monster_id
-      %td= theme.price
-      %td= theme.screenshot_list
-      %td= theme.authors_id
-      %td= theme.keywords_list
-      %td= theme.categories_list
-      %td= theme.sources
-      %td= theme.type
-      %td= theme.description
-      %td= theme.pages
-      %td= link_to 'Show', theme
-      %td= link_to 'Edit', edit_theme_path(theme)
-      %td= link_to 'Destroy', theme, :method => :delete, :data => { :confirm => 'Are you sure?' }
-
-%br
 
 .row
-  .span3
-    = @themes.size
-    Themes available
-
-.row
-  = render @themes
-
-= link_to 'New Theme', new_theme_path
+  = will_paginate @themes

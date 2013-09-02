@@ -1,0 +1,8 @@
+$('#themes').append('<%= j render(@themes) %>');
+
+<% if @themes.next_page %>
+$('.pagination').replaceWith('<%= j will_paginate(@themes) %>');
+  <% else %>
+  $('.pagination').remove();
+<% end %>
+
