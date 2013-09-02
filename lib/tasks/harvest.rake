@@ -11,7 +11,7 @@ namespace :harvest do
     categories = prepare_categories
 
     iterator = 0
-    chunk_size = 1000
+    chunk_size = 3100
     items_counter = 0
 
     #begin
@@ -47,7 +47,25 @@ namespace :harvest do
   end
 
   task :update_keywords => :environment do
+    start_time = Time.now
+    puts start_time.to_s
+
     Theme.all.each{|item| update_keywords(item) if item[:keywords_list].nil? }
+
+    end_time = Time.now
+    puts "Timing   " + (end_time - start_time).to_s
+  end
+
+  task :update_categories => :environment do
+    start_time = Time.now
+    puts start_time.to_s
+
+    categories = prepare_categories
+    puts "Categories list prepared"
+    Theme.all.each{|item| update_categories(item, categories) if item[:categories_list].nil? }
+
+    end_time = Time.now
+    puts "Timing   " + (end_time - start_time).to_s
   end
 
 
@@ -83,6 +101,7 @@ namespace :harvest do
     keywords = keywords.split(" ")
     theme.keywords_list = keywords
     theme.save
+    puts '.'
   end
 
   def update_categories(theme, categories)
@@ -93,6 +112,7 @@ namespace :harvest do
     .map{ |item| item.split(";")[1] }
     .map{ |id| categories.select{|k,v| k.include? id }.first.values[0] }
     theme.save
+    puts '.'
   end
 
   def update_complex_theme_info(theme)
