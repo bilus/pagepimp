@@ -10,6 +10,8 @@ namespace :harvest do
 
     categories = prepare_categories
 
+    puts categories.inspect
+
     iterator = 0
     chunk_size = 3100
     items_counter = 0
@@ -66,6 +68,21 @@ namespace :harvest do
 
     end_time = Time.now
     puts "Timing   " + (end_time - start_time).to_s
+  end
+
+  task :tag_categories_and_keywords => :environment do
+    Theme.all.each{ |item| copy_categories_to_tags(item) }
+  end
+
+  def copy_categories_to_tags(theme)
+    tags = theme.categories_list.map{ |i| i.downcase}.join(',')
+    tags += ',' + theme.keywords_list.map{ |i| i.downcase}.join(',')
+
+    theme.tag_list = ""
+    theme.save
+
+    theme.tag_list = tags
+    theme.save
   end
 
 
