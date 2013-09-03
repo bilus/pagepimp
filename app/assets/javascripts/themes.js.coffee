@@ -7,7 +7,6 @@ jQuery ->
     $(window).scroll ->
       url = $('.pagination .next_page').attr('href')
       if url && $(window).scrollTop() > $(document).height() - $(window).height() - 50
-        console.log("paginate" + url.toString());
         $('.pagination').text("Fetching more templates...")
         $.getScript(url)
     $(window).scroll()

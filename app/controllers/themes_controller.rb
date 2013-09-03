@@ -2,7 +2,9 @@ class ThemesController < ApplicationController
   # GET /themes
   # GET /themes.json
   def index
-    @themes = Theme.page(params[:page]).per_page(15)
+    @themes = Theme.visible_for(current_user).page(params[:page]).per_page(15)
+
+
 
     respond_to do |format|
       format.html # index.html.erb
@@ -83,9 +85,13 @@ class ThemesController < ApplicationController
     end
   end
 
-  def disable
+  def toggle_active
     @theme = Theme.find(params[:id])
-    @theme.active = false
+    if @theme.active?
+      @theme.active = false
+    else
+      @theme.active = true
+    end
     @theme.save!
 
     respond_to do |format|

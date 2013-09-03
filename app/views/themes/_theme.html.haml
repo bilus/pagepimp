@@ -1,24 +1,25 @@
 .span3.well{id: dom_id(theme)}
   .id
-    Id
+    %span> Template #
     = theme.template_monster_id
 
-  = if user_signed_in?
+  - if user_signed_in?
     .active
-      - if theme.active == 1
-        Active
+      - if theme.active?
+        = link_to "Disable", toggle_active_theme_path(theme), method: :put, remote: true
       - else
-        Not active
+        = link_to "Enable", toggle_active_theme_path(theme), method: :put, remote: true
+
 
   -#.price
   -#  Price
   -#  = theme.price
-  -#.keywords
-  -#  Keywords
-  -#  = theme.keywords_list
-  -#.categories
-  -#  Categories
-  -#  = theme.categories_list
+  .keywords
+    Keywords
+    = theme.keywords_list
+  .categories
+    Categories
+    = theme.categories_list
 
   -#= if user_signed_in?
   -#  = form_for theme, method: :put, remote: true do |f|
@@ -27,8 +28,6 @@
   -#    = link_to_submit "Disable link"
 
     -#= link_to "Disable", theme_path(theme, active: false), method: :put
-  = if user_signed_in?
-    = link_to "Disable", disable_theme_path(theme), method: :put, remote: true
 
   -#= link_to "Order", themes_path(theme: theme.attributes), method: :post, remote: true
   = link_to image_tag(theme.screenshot_list[1], width: 215, height: 166), new_theme_order_path(theme)

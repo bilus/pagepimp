@@ -6,7 +6,7 @@ Pagepimp::Application.routes.draw do
     resources :orders
 
     member do
-      put :disable
+      put :toggle_active
     end
   end
 
