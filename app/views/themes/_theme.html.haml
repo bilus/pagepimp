@@ -1,13 +1,14 @@
-.span3.well
+.span3.well{id: dom_id(theme)}
   .id
     Id
     = theme.template_monster_id
 
-  .active
-    - if theme.active == 1
-      Active
-    - else
-      Not active
+  = if user_signed_in?
+    .active
+      - if theme.active == 1
+        Active
+      - else
+        Not active
 
   -#.price
   -#  Price
@@ -19,14 +20,15 @@
   -#  Categories
   -#  = theme.categories_list
 
+  -#= if user_signed_in?
+  -#  = form_for theme, method: :put, remote: true do |f|
+  -#    = f.hidden_field :active, value: false
+  -#    = f.submit "Disable"
+  -#    = link_to_submit "Disable link"
+
+    -#= link_to "Disable", theme_path(theme, active: false), method: :put
   = if user_signed_in?
-    = form_for theme, method: :put, remote: true do |f|
-      = f.hidden_field :active, value: false
-      = f.submit "Disable"
-
-
-    = link_to "Disable", theme_path(theme, active: false), method: :put
-
+    = link_to "Disable", disable_theme_path(theme), method: :put, remote: true
 
   -#= link_to "Order", themes_path(theme: theme.attributes), method: :post, remote: true
   = link_to image_tag(theme.screenshot_list[1], width: 215, height: 166), new_theme_order_path(theme)

@@ -82,4 +82,14 @@ class ThemesController < ApplicationController
       format.json { head :no_content }
     end
   end
+
+  def disable
+    @theme = Theme.find(params[:id])
+    @theme.active = false
+    @theme.save!
+
+    respond_to do |format|
+      format.js
+    end
+  end
 end

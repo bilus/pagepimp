@@ -4,6 +4,10 @@ Pagepimp::Application.routes.draw do
   resources :orders
   resources :themes do
     resources :orders
+
+    member do
+      put :disable
+    end
   end
 
 
