@@ -10,6 +10,7 @@ Pagepimp::Application.routes.draw do
     end
   end
 
+  get 'tags/:tag', to: 'themes#index', as: :tag
 
   # The priority is based upon order of creation:
   # first created -> highest priority.

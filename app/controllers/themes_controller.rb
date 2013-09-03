@@ -2,9 +2,12 @@ class ThemesController < ApplicationController
   # GET /themes
   # GET /themes.json
   def index
-    @themes = Theme.visible_for(current_user).page(params[:page]).per_page(15)
 
-
+    if params[:tag]
+      @themes = Theme.visible_for(current_user).tagged_with(params[:tag]).page(params[:page]).per_page(15)
+    else
+      @themes = Theme.visible_for(current_user).page(params[:page]).per_page(15)
+    end
 
     respond_to do |format|
       format.html # index.html.erb
