@@ -11,6 +11,14 @@ class Theme < ActiveRecord::Base
     end
   }
 
+  scope :search, lambda { |search|
+    if search
+      tagged_with(search.split(" "))
+    else
+      scoped
+    end
+  }
+
   has_many :orders
   accepts_nested_attributes_for :orders
 

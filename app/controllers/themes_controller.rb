@@ -3,10 +3,18 @@ class ThemesController < ApplicationController
   # GET /themes.json
   def index
 
-    if params[:tag]
-      @themes = Theme.visible_for(current_user).tagged_with(params[:tag]).page(params[:page]).per_page(15)
+    @tags = ActsAsTaggableOn::Tag.
+        group("tags.name").
+        select("tags.name")
+
+    if params[:search]
+      @themes = Theme.visible_for(current_user).search(params[:search]).page(params[:page]).per_page(15)
     else
-      @themes = Theme.visible_for(current_user).page(params[:page]).per_page(15)
+      if params[:tag]
+        @themes = Theme.visible_for(current_user).tagged_with(params[:tag]).page(params[:page]).per_page(15)
+      else
+        @themes = Theme.visible_for(current_user).page(params[:page]).per_page(15)
+      end
     end
 
     respond_to do |format|
