@@ -3,10 +3,6 @@ class ThemesController < ApplicationController
   # GET /themes.json
   def index
 
-    @tags = ActsAsTaggableOn::Tag.
-        group("tags.name").
-        select("tags.name")
-
     if params[:search]
       @themes = Theme.visible_for(current_user).search(params[:search]).newest.page(params[:page]).per_page(15)
     else

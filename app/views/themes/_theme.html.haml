@@ -1,4 +1,4 @@
-.span3.well{id: dom_id(theme)}
+.span3.well{id: dom_id(theme), class:  theme.active? ? "active" : "inactive" }
   .id
     %span> Template #
     = theme.template_monster_id
@@ -10,14 +10,6 @@
       - else
         = link_to "Enable", toggle_active_theme_path(theme), method: :put, remote: true
 
-
-  -#.price
-  -#  Price
-  -#  = theme.price
-  -#.keywords
-  -#  Keywords
-  -#  = theme.keywords_list
-
   - if user_signed_in?
     .categories
       Categories
@@ -26,15 +18,8 @@
       Tags:
       = theme_tags_links(theme)
 
-  -#= if user_signed_in?
-  -#  = form_for theme, method: :put, remote: true do |f|
-  -#    = f.hidden_field :active, value: false
-  -#    = f.submit "Disable"
-  -#    = link_to_submit "Disable link"
+  -#.keywords
+  -#  Keywords
+  -#  = theme.keywords_list
 
-    -#= link_to "Disable", theme_path(theme, active: false), method: :put
-
-  -#= link_to "Order", themes_path(theme: theme.attributes), method: :post, remote: true
   = link_to image_tag(theme.screenshot_list[1], width: 215, height: 166), new_theme_order_path(theme)
-  -#.images
-  -#  %img{src: theme.screenshot_list[1], width: 215, height: 166 }
