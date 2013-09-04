@@ -17,12 +17,14 @@
   -#.keywords
   -#  Keywords
   -#  = theme.keywords_list
-  .categories
-    Categories
-    = theme.categories_list
-  .tags
-    Tags:
-    = theme_tags_links(theme)
+
+  - if user_signed_in?
+    .categories
+      Categories
+      = theme.categories_list
+    .tags
+      Tags:
+      = theme_tags_links(theme)
 
   -#= if user_signed_in?
   -#  = form_for theme, method: :put, remote: true do |f|
