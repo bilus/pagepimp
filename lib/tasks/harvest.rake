@@ -1,4 +1,5 @@
 require 'open-uri'
+require 'nokogiri'
 
 namespace :harvest do
 
@@ -8,12 +9,15 @@ namespace :harvest do
     puts 'harvest#run'
 
     exit_requested = false
-    Kernel.trap( "INT" ) { exit_requested = true } # Ctrl+C to exit.
+    Kernel.trap("INT") do # Ctrl+C to exit.
+      puts "Waiting for current chunk to finish..."
+      exit_requested = true
+    end
 
     start_time = Time.now
 
-    iterator = Theme.maximum(:template_monster_id)
-    chunk_size = 10
+    iterator = 26_925 #Theme.maximum(:template_monster_id)
+    chunk_size = 100
     items_counter = 0
 
     begin
@@ -22,13 +26,17 @@ namespace :harvest do
       items_counter += items.size
     end until (items.empty? || exit_requested)
 
-    puts "\nHarvested #{items_counter} themes in " + (Time.now - start_time).to_s + "\n"
+    puts "\nHarvested #{items_counter} themes in " + (Time.now - start_time).to_s + "s\n"
   end
 
   task :flush => :environment do
     puts "Hervest#flush"
     puts "Removing " + Theme.count.to_s + " elements."
     Theme.destroy_all
+  end
+
+  task :preview => :environment do
+    puts find_life_preview_url(ENV["id"])
   end
 
 
@@ -77,11 +85,11 @@ namespace :harvest do
     }
     .map{ |item| item.merge(active: true) }
     .map{ |item| Theme.new(item) }
-    .map{ |item| update_complex_theme_info(item) }
-    .map{ |item| copy_categories_to_tags(item) }
-    .each{ |item| item.transaction do
+    .each{ |theme| theme.transaction do
       print '.'
-      item.save!
+      update_complex_theme_info(theme)
+      copy_categories_to_tags(theme)
+      theme.save!
     end
     }
   end
@@ -102,21 +110,19 @@ namespace :harvest do
         description: result[22]
         }
     }
-    .map{ |item|
+    .each do |item|
       theme.sources = item[:sources]
       theme.theme_type = item[:theme_type]
       theme.description = item[:description]
       theme.keywords_list = item[:keywords_list]
       theme.categories_list = item[:categories_list]
-    }
-    theme
+    end
   end
 
   def copy_categories_to_tags(theme)
     tags = theme.categories_list.map{ |i| i.downcase}.join(',')
     tags += ',' + theme.keywords_list.map{ |i| i.downcase}.join(',')
     theme.tag_list = tags
-    theme
   end
 
   def prepare_request_link(iterator, chunk_size)
@@ -129,8 +135,20 @@ namespace :harvest do
     "http://www.templatemonster.com/webapi/template_info3.php?delim=@&template_number=#{theme_id}&list_delim=;&list_begin=[&list_end=]#{credentials}"
   end
 
+  def prepare_life_template_url(theme_id)
+    "http://www.templatemonster.com/demo/#{theme_id}.html"
+  end
+
   def credentials
     "&login=criticue&webapipassword=c0931ab33ff801e711b00bb3c5e9af1e"
+  end
+
+  def find_life_preview_url(id)
+    puts "life prev with id: #{id}"
+    doc = Nokogiri::HTML(open(prepare_life_template_url(id)))
+    url = doc.css('#iframelive').css('#frame')
+    puts url.inspect
+    url[0]["src"] if url.present? #[0]["src"] unless doc.nil?
   end
 
 end

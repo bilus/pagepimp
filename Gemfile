@@ -18,6 +18,8 @@ gem "devise"
 
 gem "acts-as-taggable-on"
 
+gem "nokogiri"
+
 
 
 

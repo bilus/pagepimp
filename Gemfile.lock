@@ -73,6 +73,7 @@ GEM
       treetop (~> 1.4.8)
     mime-types (1.24)
     multi_json (1.7.9)
+    nokogiri (1.5.9)
     orm_adapter (0.4.0)
     polyglot (0.3.3)
     rack (1.4.5)
@@ -144,6 +145,7 @@ DEPENDENCIES
   haml-rails
   jquery-rails
   less-rails
+  nokogiri
   rails (= 3.2.14)
   sass-rails (~> 3.2.3)
   sqlite3
