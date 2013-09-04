@@ -8,12 +8,12 @@ class ThemesController < ApplicationController
         select("tags.name")
 
     if params[:search]
-      @themes = Theme.visible_for(current_user).search(params[:search]).page(params[:page]).per_page(15)
+      @themes = Theme.visible_for(current_user).search(params[:search]).newest.page(params[:page]).per_page(15)
     else
       if params[:tag]
-        @themes = Theme.visible_for(current_user).tagged_with(params[:tag]).page(params[:page]).per_page(15)
+        @themes = Theme.visible_for(current_user).tagged_with(params[:tag]).newest.page(params[:page]).per_page(15)
       else
-        @themes = Theme.visible_for(current_user).page(params[:page]).per_page(15)
+        @themes = Theme.visible_for(current_user).newest.page(params[:page]).per_page(15)
       end
     end
 

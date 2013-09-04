@@ -19,6 +19,8 @@ class Theme < ActiveRecord::Base
     end
   }
 
+  scope :newest, lambda { order('created_at DESC') }
+
   has_many :orders
   accepts_nested_attributes_for :orders
 
