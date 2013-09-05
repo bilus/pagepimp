@@ -7,39 +7,42 @@
   <%= csrf_meta_tags %>
 </head>
 <body>
-<div class="navbar">
-  <div class="navbar-inner">
-    <div class="container">
-      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </a>
-      <a class="brand" href="#">Page Pimp</a>
-      <div class="nav-collapse">
-        <ul class="nav">
-          <li><%= link_to "Browse themes", themes_path %></li>
-          <li><% link_to "Price List" %></li>
-          <li><% link_to "Contact Us" %></li>
-          <li><% link_to "Cart" %></li>
-        </ul>
-        <ul class="nav pull-right">
-          <li>
-            <% if user_signed_in? %>
-                <% link_to 'Edit profile', edit_user_registration_path %>
-                <%= link_to "Logout #{current_user.email}", destroy_user_session_path, method: :delete %>
-            <% else %>
-                <% link_to "Sign up", new_user_registration_path %>
-                <%= link_to "Login", new_user_session_path %>
-            <% end %>
-          </li>
-        </ul>
+<div id="wrapper">
+
+    <div class="navbar navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </a>
+          <a class="brand" href="#">Page Pimp</a>
+          <div class="nav-collapse">
+            <ul class="nav">
+              <li><%= link_to "Browse themes", themes_path %></li>
+              <li><% link_to "Price List" %></li>
+              <li><% link_to "Contact Us" %></li>
+              <li><% link_to "Cart" %></li>
+            </ul>
+            <ul class="nav pull-right">
+              <li>
+                <% if user_signed_in? %>
+                    <% link_to 'Edit profile', edit_user_registration_path %>
+                    <%= link_to "Logout #{current_user.email}", destroy_user_session_path, method: :delete %>
+                <% else %>
+                    <% link_to "Sign up", new_user_registration_path %>
+                    <%= link_to "Login", new_user_session_path %>
+                <% end %>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-<div class="container" id="content">
-<%= yield %>
+    <div class="container" id="content">
+    <%= yield %>
+    </div>
 </div>
 </body>
 </html>
