@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130903085510) do
+ActiveRecord::Schema.define(:version => 20130905074001) do
 
   create_table "orders", :force => true do |t|
     t.string   "email"
@@ -49,11 +49,12 @@ ActiveRecord::Schema.define(:version => 20130903085510) do
     t.string   "theme_type"
     t.string   "description"
     t.string   "pages"
-    t.datetime "created_at",                            :null => false
-    t.datetime "updated_at",                            :null => false
+    t.datetime "created_at",                                                            :null => false
+    t.datetime "updated_at",                                                            :null => false
     t.integer  "exclusive_price"
     t.datetime "date_of_addition"
     t.boolean  "active",              :default => true
+    t.string   "live_preview_url",    :default => "criticue.com/preview_not_available"
   end
 
   create_table "users", :force => true do |t|

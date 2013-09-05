@@ -14,12 +14,18 @@
     .categories
       Categories
       = theme.categories_list
-    .tags
-      Tags:
-      = theme_tags_links(theme)
 
   -#.keywords
   -#  Keywords
   -#  = theme.keywords_list
 
-  = link_to image_tag(theme.screenshot_list[1], width: 215, height: 166), new_theme_order_path(theme)
+  .thumb
+    = link_to image_tag(theme.screenshot_list[1], width: 215, height: 166, class: "img-polaroid"), theme_path(theme)
+    -#= link_to image_tag(theme.screenshot_list[1], width: 215, height: 166, class: "img-polaroid"), new_theme_order_path(theme)
+  -#%br
+  -#= link_to "Live preview", theme.live_preview_url
+  %p
+  .tags
+    %strong
+      Tags:
+    = theme_tags_links(theme)

@@ -1,6 +1,6 @@
 %h1 Browse themes
 
-.row
+.row-fluid
   #search
     = form_tag themes_path, method: :get do
       = text_field_tag :search, params[:search]
@@ -11,5 +11,5 @@
     = render @themes
 
 
-.row
+.row-fluid
   = will_paginate @themes

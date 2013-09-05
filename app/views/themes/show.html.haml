@@ -1,42 +1,66 @@
+:css
+  #content{
+    width: 100%;
+    height: 100%;
+  }
+
+  #theme_action_bar{
+    width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+
+  }
+
 %p#notice= notice
 
-%p
-  %b Template monster:
-  = @theme.template_monster_id
-%p
-  %b Price:
-  = @theme.price
-%p
-  %b Screenshot list:
-  = @theme.screenshot_list
-%p
-  %b Authors:
-  = @theme.authors_id
-%p
-  %b Keywords list:
-  = @theme.keywords_list
-%p
-  %b Categories list:
-  = @theme.categories_list
-%p
-  %b Sources:
-  = @theme.sources
-%p
-  %b Type:
-  = @theme.theme_type
-%p
-  %b Description:
-  = @theme.description
-%p
-  %b Pages:
-  = @theme.pages
-%p
-  %b Orders
-  = @theme.orders
-%p
-  %b Active
-  = @theme.active
+#theme_action_bar
+  .pull-right
+    = link_to "Use it", new_theme_order_path(@theme), class: "btn btn-danger"
+    = link_to 'Back', :back , class: "btn"
+  %p
+    |
 
-= link_to 'Edit', edit_theme_path(@theme)
-\|
-= link_to 'Back', themes_path
+%iframe{src: @theme.live_preview_url, width: "100%", height: "100%"}
+
+
+- if user_signed_in?
+  %p
+    %b Template monster:
+    = @theme.template_monster_id
+  %p
+    %b Price:
+    = @theme.price
+  %p
+    %b Screenshot list:
+    = @theme.screenshot_list
+  %p
+    %b Authors:
+    = @theme.authors_id
+  %p
+    %b Keywords list:
+    = @theme.keywords_list
+  %p
+    %b Categories list:
+    = @theme.categories_list
+  %p
+    %b Sources:
+    = @theme.sources
+  %p
+    %b Type:
+    = @theme.theme_type
+  %p
+    %b Description:
+    = @theme.description
+  %p
+    %b Pages:
+    = @theme.pages
+  %p
+    %b Orders
+    = @theme.orders
+  %p
+    %b Active
+    = @theme.active
+
+  = link_to 'Edit', edit_theme_path(@theme)
+  \|
+  = link_to 'Back', themes_path

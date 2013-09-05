@@ -16,8 +16,8 @@ namespace :harvest do
 
     start_time = Time.now
 
-    iterator = 26_925 #Theme.maximum(:template_monster_id)
-    chunk_size = 100
+    iterator = Theme.maximum(:template_monster_id) || 0
+    chunk_size = 500
     items_counter = 0
 
     begin
@@ -36,7 +36,16 @@ namespace :harvest do
   end
 
   task :preview => :environment do
-    puts find_life_preview_url(ENV["id"])
+    theme = Theme.new(template_monster_id: ENV["id"])
+    puts find_life_preview_url(theme)
+  end
+
+  task :stats => :environment do
+    all_count = Theme.count
+    active_count = Theme.active.count
+    active_percent = (active_count.to_f/all_count * 100)
+    puts "All themes number:    #{all_count}"
+    puts "Themes with preview:  #{active_count}  : %3.2f of all" % active_percent
   end
 
 
@@ -50,7 +59,8 @@ namespace :harvest do
     .split("\r\n")
     .map{ |r| r.split(";") }
     .delete_if{ |item| Theme.where(template_monster_id: item[0]).present? }
-    .map{ |result| {
+    .map {|result|
+      {
         template_monster_id: result[0],
         price: result[1],
         exclusive_price: result[2],
@@ -63,34 +73,30 @@ namespace :harvest do
         is_non_unique_corporate: result[11],
         authors_id: result[12],
         screenshot_list: result[15].sub(/^\{/, "").sub(/}$/, "").split(',')
-    } }
-    .delete_if{ |item| (
-    item[:is_adult] == "1" ||
+      }
+    }
+    .map {|item|
+      filter_screenshots(item)
+    }
+    .delete_if {|item|
+        item[:is_adult] == "1" ||
         item[:is_flash] == "1" ||
         item[:is_unique_logo] == "1"  ||
         item[:is_non_unique_logo] == "1" ||
         item[:is_unique_corporate] == "1" ||
         item[:is_non_unique_corporate] == "1" ||
-        item[:screenshot_list].first.match(/.+swf/) == true || # remove items, which does not follow standard structure
-        item[:screenshot_list].first.match(/.+html/) == true
-    )}
-    .map{ |item|
-      item.delete(:is_adult)
-      item.delete(:is_flash)
-      item.delete(:is_unique_logo)
-      item.delete(:is_non_unique_logo)
-      item.delete(:is_unique_corporate)
-      item.delete(:is_non_unique_corporate)
-      item
+        item[:screenshot_list].empty?
     }
-    .map{ |item| item.merge(active: true) }
+    .map{ |item|
+      item.except(:is_adult, :is_flash, :is_unique_logo, :is_non_unique_logo, :is_unique_corporate, :is_non_unique_corporate)
+    }
     .map{ |item| Theme.new(item) }
-    .each{ |theme| theme.transaction do
+    .each{ |theme|
       print '.'
       update_complex_theme_info(theme)
       copy_categories_to_tags(theme)
+      enable_themes_with_live_preview(theme)
       theme.save!
-    end
     }
   end
 
@@ -119,6 +125,14 @@ namespace :harvest do
     end
   end
 
+  def filter_screenshots(item)
+    item.merge(screenshot_list: item[:screenshot_list].select {|s| valid_screenshot?(s)})
+  end
+
+  def valid_screenshot?(url)
+    (url =~ /(\.jpg|\.jpeg|\.png)$/i).present?
+  end
+
   def copy_categories_to_tags(theme)
     tags = theme.categories_list.map{ |i| i.downcase}.join(',')
     tags += ',' + theme.keywords_list.map{ |i| i.downcase}.join(',')
@@ -143,12 +157,28 @@ namespace :harvest do
     "&login=criticue&webapipassword=c0931ab33ff801e711b00bb3c5e9af1e"
   end
 
-  def find_life_preview_url(id)
-    puts "life prev with id: #{id}"
-    doc = Nokogiri::HTML(open(prepare_life_template_url(id)))
-    url = doc.css('#iframelive').css('#frame')
-    puts url.inspect
-    url[0]["src"] if url.present? #[0]["src"] unless doc.nil?
+  def enable_themes_with_live_preview(theme)
+    url = find_life_preview_url(theme)
+    theme.live_preview_url = url
+    if url
+      theme.active = true
+    else
+      theme.active = false
+    end
+  end
+
+  def find_life_preview_url(theme)
+    id = theme.template_monster_id
+    #puts "life prev with id: #{id}"
+    begin
+      site = open(prepare_life_template_url(id))
+      doc = Nokogiri::HTML(site)
+      url = doc.css('#iframelive').css('#frame')
+      url[0]["src"] if url.present?
+    rescue OpenURI::HTTPError => ex
+      puts "Live_preview 404 for #{id}"
+      nil
+    end
   end
 
 end

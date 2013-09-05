@@ -8,7 +8,34 @@
 }
 
 .well.inactive{
-  background-color: #dddddd;
+  background-color: #aaaaaa;
 }
 
+.id{
+  height: 40px;
+  font-size: 1.2em;
+  text-align: center;
+}
+
+
+.tags{
+  font-size: 0.8em;
+  text-align: justify;
+  height: 125px;
+  overflow: hidden;
+}
+
+
+.thumb img{
+  width: 215px;
+  height: 166px;
+}
+
+.thumb a{
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.tags {
+}
 

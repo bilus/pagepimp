@@ -1,7 +1,7 @@
 require 'open-uri'
 
 class Theme < ActiveRecord::Base
-  attr_accessible :active, :authors_id, :categories_list, :date_of_addition, :description, :exclusive_price, :keywords_list, :pages, :price, :screenshot_list, :sources, :template_monster_id, :tag_list, :theme_type, :created_at, :updated_at
+  attr_accessible :active, :authors_id, :categories_list, :date_of_addition, :description, :exclusive_price, :live_preview_url, :keywords_list, :pages, :price, :screenshot_list, :sources, :template_monster_id, :tag_list, :theme_type, :created_at, :updated_at
 
   scope :visible_for,  lambda { |user|
     if user
@@ -11,8 +11,10 @@ class Theme < ActiveRecord::Base
     end
   }
 
+  scope :active, lambda { where(active: true) }
+
   scope :search, lambda { |search|
-    if search
+    if search.size > 2
       tagged_with(search.split(" "))
     else
       scoped
