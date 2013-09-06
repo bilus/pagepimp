@@ -3,8 +3,8 @@
 %table.table
   %tr
     %th Order id
-    %th Homepage_url
     %th Theme id
+    %th Homepage_url
     %th
     %th
     %th
@@ -12,8 +12,8 @@
   - @orders.each do |order|
     %tr
       %td= order.id
-      %td= order.homepage_url
       %td= link_to "#{order.theme_id}", theme_path(order.theme_id)
+      %td= order.homepage_url
       %td= link_to 'Show', order
       %td= link_to 'Edit', edit_order_path(order)
       %td= link_to 'Destroy', order, :method => :delete, :data => { :confirm => 'Are you sure?' }
