@@ -1,7 +1,7 @@
 .span3.well{id: dom_id(theme), class:  theme.active? ? "active" : "inactive" }
   .id
     %span> Template #
-    = theme.template_monster_id
+    = theme.id
 
   - if user_signed_in?
     .active
@@ -10,20 +10,8 @@
       - else
         = link_to "Enable", toggle_active_theme_path(theme), method: :put, remote: true
 
-  - if user_signed_in?
-    .categories
-      Categories
-      = theme.categories_list
-
-  -#.keywords
-  -#  Keywords
-  -#  = theme.keywords_list
-
   .thumb
     = link_to image_tag(theme.screenshot_list[1], width: 215, height: 166, class: "img-polaroid"), theme_path(theme)
-    -#= link_to image_tag(theme.screenshot_list[1], width: 215, height: 166, class: "img-polaroid"), new_theme_order_path(theme)
-  -#%br
-  -#= link_to "Live preview", theme.live_preview_url
   %p
   .tags
     %strong

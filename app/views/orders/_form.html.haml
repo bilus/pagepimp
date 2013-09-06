@@ -1,36 +1,53 @@
+:css
+  input[type="submit"]
+  {
+    background:url(https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif);
+    border: 0;
+    width: 171px;
+    height: 47px;
+  }
+
 .order_summary
-
   .row-fluid
-    .span4.offset2
-      .theme_summary
-        %h3
-          Item
+    = form_for [@theme, @order], remote: true do |f|
+      .span4.offset2
+        .theme_summary
+          %h3
+            Item
 
-        %img{src: @theme.screenshot_list[1], width: 107, height: 83 }
-        Theme
-        = @theme.template_monster_id
-        custom development
+          %img{src: @theme.screenshot_list[1], width: 107, height: 83 }
+          Theme
+          = @theme.id
+          custom development
 
-    .span4
-      .pricing_summary
-        %h3
-          Quotation
-        %table.table.table-bordered
-          %thead
-            %tr
-              %th Item
-              %th Price
-          %tbody
-            %tr
-              %td Theme #{@theme.template_monster_id} custom development
-              %td $500
-            %tr
-              %td Total
-              %td $500
+          - if @order.errors.any?
+            #error_explanation
+              %h2= "#{pluralize(@order.errors.count, "error")} prohibited this order from being saved:"
+              %ul
+                - @order.errors.full_messages.each do |msg|
+                  %li= msg
+          %p
+            .field
+              = f.label :homepage_url
+              = f.text_field :homepage_url
 
-      .pull-right
-        %form{action: "https://www.paypal.com/cgi-bin/webscr",  method:"post", target: "_top" }
-          %input{type: "hidden", name: "cmd", value: "_s-xclick"}
-          %input{type: "hidden", name: "hosted_button_id", value: "XU8QNUFFABBUQ"}
-          %input{type: "hidden", name: "item_name", value: "Theme #{@theme.template_monster_id} custom development"}
-          %input{type: "image", id: "paypal_submit",  src:"https://www.paypalobjects.com/en_US/i/btn/btn_buynowCC_LG.gif",  border: "0", name: "submit",  alt: "PayPal - The safer, easier way to pay online!"}
+      .span4
+        .pricing_summary
+          %h3
+            Quotation
+          %table.table.table-bordered
+            %thead
+              %tr
+                %th Item
+                %th Price
+            %tbody
+              %tr
+                %td Theme #{@theme.id} custom development
+                %td $500
+              %tr
+                %td Total
+                %td $500
+
+        .pull-right
+          .actions
+            = f.submit ''

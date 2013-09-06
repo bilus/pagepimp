@@ -1,16 +1,22 @@
 class OrdersController < ApplicationController
 
-  before_filter :load_theme
+  before_filter :load_theme, except: [:index, :destroy]
 
   # GET /orders
   # GET /orders.json
   def index
-    @orders = @theme.orders.all
 
-    respond_to do |format|
-      format.html # index.html.erb
-      format.json { render json: @orders }
+    if user_signed_in?
+      @orders = Order.all
+
+      respond_to do |format|
+        format.html # index.html.erb
+        format.json { render json: @orders }
+      end
+    else
+      redirect_to themes_path
     end
+
   end
 
   # GET /orders/1
@@ -77,7 +83,8 @@ class OrdersController < ApplicationController
   # DELETE /orders/1
   # DELETE /orders/1.json
   def destroy
-    @order = @theme.orders.find(params[:id])
+    #@order = @theme.orders.find(params[:id])
+    @order = Order.find(params[:id])
     @order.destroy
 
     respond_to do |format|

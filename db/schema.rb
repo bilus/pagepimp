@@ -11,14 +11,15 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130905074001) do
+ActiveRecord::Schema.define(:version => 20130906105030) do
 
   create_table "orders", :force => true do |t|
     t.string   "email"
     t.string   "comment"
-    t.datetime "created_at", :null => false
-    t.datetime "updated_at", :null => false
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
     t.integer  "theme_id"
+    t.string   "homepage_url"
   end
 
   create_table "taggings", :force => true do |t|
@@ -49,12 +50,12 @@ ActiveRecord::Schema.define(:version => 20130905074001) do
     t.string   "theme_type"
     t.string   "description"
     t.string   "pages"
-    t.datetime "created_at",                                                            :null => false
-    t.datetime "updated_at",                                                            :null => false
+    t.datetime "created_at",                            :null => false
+    t.datetime "updated_at",                            :null => false
     t.integer  "exclusive_price"
     t.datetime "date_of_addition"
     t.boolean  "active",              :default => true
-    t.string   "live_preview_url",    :default => "criticue.com/preview_not_available"
+    t.string   "live_preview_url"
   end
 
   create_table "users", :force => true do |t|
