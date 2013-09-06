@@ -21,17 +21,15 @@
           <div class="nav-collapse">
             <ul class="nav">
               <li><%= link_to "Browse themes", themes_path %></li>
-              <li><% link_to "Price List" %></li>
-              <li><% link_to "Contact Us" %></li>
-              <li><% link_to "Cart" %></li>
+              <% if user_signed_in? %>
+              <li><%= link_to "Manage orders", orders_path %></li>
+              <% end %>
             </ul>
             <ul class="nav pull-right">
               <li>
                 <% if user_signed_in? %>
-                    <% link_to 'Edit profile', edit_user_registration_path %>
                     <%= link_to "Logout #{current_user.email}", destroy_user_session_path, method: :delete %>
                 <% else %>
-                    <% link_to "Sign up", new_user_registration_path %>
                     <%= link_to "Login", new_user_session_path %>
                 <% end %>
               </li>
