@@ -21,6 +21,10 @@
     background-color: white;
   }
 
+  .inactive {
+    background-color: blue;
+  }
+
   #iframe {
     position:absolute;
     width: 100%;
@@ -28,53 +32,73 @@
     bottom: 0px;
   }
 
-%p#notice= notice
-#theme_action_bar
-  = link_to "Use it", new_theme_order_path(@theme), class: "btn btn-danger"
-  = link_to 'Back', themes_path , class: "btn"
+.row
+  %p#notice= notice
 
-#iframe
-  %iframe{src: @theme.live_preview_url, width: "100%", height: "100%"}
+.row{class:  @theme.active? ? "active" : "inactive" }
+  .span12.offset2
+    #theme_action_bar
+      = link_to "Use it", new_theme_order_path(@theme), class: "btn btn-danger"
+      = link_to 'Back', themes_path , class: "btn"
 
+      - if user_signed_in?
+        - if @theme.active?
+          = link_to "Disable", toggle_active_theme_path(@theme), method: :put, remote: true
+        - else
+          = link_to "Enable", toggle_active_theme_path(@theme), method: :put, remote: true
+
+        = link_to "< Prev", previous_theme_path(@theme)
+        = link_to "Next >", next_theme_path(@theme)
+
+
+- if (@theme.live_preview_url.present?)
+  .row
+    #iframe
+      %iframe{src: @theme.live_preview_url, width: "100%", height: "100%"}
+- else
+  %p
+    No live preview.
 
 - if user_signed_in?
-  %p
-    %b Template monster:
-    = @theme.template_monster_id
-  %p
-    %b Price:
-    = @theme.price
-  %p
-    %b Screenshot list:
-    = @theme.screenshot_list
-  %p
-    %b Authors:
-    = @theme.authors_id
-  %p
-    %b Keywords list:
-    = @theme.keywords_list
-  %p
-    %b Categories list:
-    = @theme.categories_list
-  %p
-    %b Sources:
-    = @theme.sources
-  %p
-    %b Type:
-    = @theme.theme_type
-  %p
-    %b Description:
-    = @theme.description
-  %p
-    %b Pages:
-    = @theme.pages
-  %p
-    %b Orders
-    = @theme.orders
-  %p
-    %b Active
-    = @theme.active
+  .row
+    #description
+      %p
+        %b Template monster:
+        = @theme.template_monster_id
+      %p
+        %b Price:
+        = @theme.price
+      %p
+        %b Screenshot list:
+        = @theme.screenshot_list
+      %p
+        %b Authors:
+        = @theme.authors_id
+      %p
+        %b Keywords list:
+        = @theme.keywords_list
+      %p
+        %b Categories list:
+        = @theme.categories_list
+      %p
+        %b Sources:
+        = @theme.sources
+      %p
+        %b Type:
+        = @theme.theme_type
+      %p
+        %b Description:
+        = @theme.description
+      %p
+        %b Pages:
+        = @theme.pages
+      %p
+        %b Orders
+        = @theme.orders
+      %p
+        %b Active
+        = @theme.active
 
-  = link_to 'Edit', edit_theme_path(@theme)
-  \|
-  = link_to 'Back', themes_path
+    = link_to 'Edit', edit_theme_path(@theme)
+    \|
+    = link_to 'Back', themes_path

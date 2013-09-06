@@ -7,6 +7,8 @@ Pagepimp::Application.routes.draw do
 
     member do
       put :toggle_active
+      get :next
+      get :previous
     end
   end
 

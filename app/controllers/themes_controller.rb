@@ -105,4 +105,16 @@ class ThemesController < ApplicationController
       format.js
     end
   end
+
+  def next
+    @theme = Theme.active.next(params[:id])
+    redirect_to @theme
+  end
+
+  def previous
+    @theme = Theme.active.previous(params[:id])
+    redirect_to @theme
+  end
+
+
 end
