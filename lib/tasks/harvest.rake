@@ -1,5 +1,7 @@
 require 'open-uri'
 require 'nokogiri'
+require 'url2png'
+require 'ruby-prof'
 
 namespace :harvest do
 
@@ -8,16 +10,16 @@ namespace :harvest do
   task :run => :environment do
     puts 'harvest#run'
 
-    exit_requested = false
+    @exit_requested = false
     Kernel.trap("INT") do # Ctrl+C to exit.
       puts "Waiting for current chunk to finish..."
-      exit_requested = true
+      @exit_requested = true
     end
 
     start_time = Time.now
 
-    iterator = Theme.maximum(:template_monster_id) || 0
-    chunk_size = 500
+    iterator = Theme.maximum(:template_monster_id) || 30000
+    chunk_size = 10
     items_counter = 0
 
     begin
@@ -52,8 +54,16 @@ namespace :harvest do
   ## INTERNAL HELPERS
 
   def harvest_themes(iterator, chunk_size)
+
     link = prepare_request_link(iterator, chunk_size)
+    puts "Harvest ing " + link
+    time1 = Time.now
     result = URI.parse(link).read
+    puts "API for chunks size #{chunk_size} responded after #{Time.now - time1} s"
+
+    puts "result ready"
+    screenshot_policy = ScreenshotPolicy.new()
+    puts "SP"
 
     result
     .split("\r\n")
@@ -92,15 +102,27 @@ namespace :harvest do
     }
     .map{ |item| Theme.new(item) }
     .each{ |theme|
-      print '.'
-      update_complex_theme_info(theme)
-      copy_categories_to_tags(theme)
-      enable_themes_with_live_preview(theme)
-      theme.save!
+      result = RubyProf.profile do
+        time2 = Time.now
+        print '.' + theme.template_monster_id.inspect
+        update_complex_theme_info(theme)
+        copy_categories_to_tags(theme)
+        upgrade_themes_with_live_preview(theme, screenshot_policy)
+        puts "Processing one theme took #{Time.now - time2} s"
+        theme.save!
+      end
+
+      File.open "rubyprof-stack#{theme.template_monster_id}.html", 'w' do |file|
+        RubyProf::CallStackPrinter.new(result).print(file)
+      end
+
     }
+    # Print a flat profile to text
+
   end
 
   def update_complex_theme_info(theme)
+    puts "update_complex_theme_info"
     result = URI.parse(prepare_complex_theme_info(theme.template_monster_id)).read
     result
     .split("\r\n")
@@ -157,14 +179,21 @@ namespace :harvest do
     "&login=criticue&webapipassword=c0931ab33ff801e711b00bb3c5e9af1e"
   end
 
-  def enable_themes_with_live_preview(theme)
+  def upgrade_themes_with_live_preview(theme, screenshot_policy)
+    puts "Upgrade_themes_with_live_preview"
+    time1 = Time.now
     url = find_life_preview_url(theme)
+    puts "Nokogiri took " + (Time.now - time1).to_s + " s."
     theme.live_preview_url = url
     if url
       theme.active = true
+      theme.thumbnail_url = screenshot_policy.thumbnail_precache_and_return(url)
+      puts "live preview found at: " + theme.thumbnail_url
     else
       theme.active = false
+      puts "no live preview."
     end
+    puts "Live preview took " + (Time.now - time1).to_s + " s."
   end
 
   def find_life_preview_url(theme)
@@ -181,4 +210,41 @@ namespace :harvest do
     end
   end
 
+end
+
+class ScreenshotPolicy
+  Url2png.config({
+    api_key: "P50C9F733A2FBB",
+    private_key: "S7460FCD5D4DEE",
+    api_url:  "http://beta.url2png.com"
+  })
+
+  PRECACHE_TIMEOUT = 0.3
+
+  def thumbnail_precache_and_return(url)
+    call_url = thumbnail_url(url)
+    begin
+      # It takes Url2Pnd couple of seconds to process a screenshot but we don't want to wait so long.
+      # The idea is to notify their server so the screenshot is ready for the review to start.
+      open(call_url, read_timeout: PRECACHE_TIMEOUT)
+    rescue
+    end
+    thumbnail_url(url)
+  end
+
+  def thumbnail_url(url)
+    Url2png::Helpers::Common.url2png_image_url(url, {format: "png"}.merge(options))
+  end
+
+  def json_url(url)
+    Url2png::Helpers::Common.url2png_image_url(url, {format: "json"}.merge(options))
+  end
+
+  def options
+    {
+      viewport: "1280x1280",
+      thumbnail_max_height: "256",
+      thumbnail_max_width: "256"
+    }
+  end
 end

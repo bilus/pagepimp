@@ -11,7 +11,7 @@
         = link_to "Enable", toggle_active_theme_path(theme), method: :put, remote: true
 
   .thumb
-    = link_to image_tag(theme.screenshot_list[1], width: 215, height: 166, class: "img-polaroid"), theme_path(theme)
+    = link_to image_tag(theme.thumbnail_url, class: "img-polaroid"), theme_path(theme)
   %p
   .tags
     %strong
