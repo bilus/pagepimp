@@ -4,13 +4,13 @@
   %tr
     %th Order id
     %th Theme id
-    %th Homepage_url
+    %th Comment
     %th
 
   - @orders.each do |order|
     %tr
       %td= order.id
       %td= link_to "#{order.theme_id}", theme_path(order.theme_id)
-      %td= order.homepage_url
+      %td= order.comment
       %td= link_to 'Destroy', order, :method => :delete, :data => { :confirm => 'Are you sure?' }
 
