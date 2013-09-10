@@ -54,9 +54,7 @@ namespace :harvest do
     result = URI.parse(link).read
     puts "API for chunks size #{chunk_size} responded after #{Time.now - time1} s"
 
-    puts "result ready"
     screenshot_policy = ScreenshotPolicy.new()
-    puts "SP"
 
     result
     .split("\r\n")
@@ -66,15 +64,12 @@ namespace :harvest do
       {
         template_monster_id: result[0],
         price: result[1],
-        exclusive_price: result[2],
-        date_of_addition: result[3],
         is_flash: result[6],
         is_adult: result[7],
         is_unique_logo: result[8],
         is_non_unique_logo: result[9],
         is_unique_corporate: result[10],
-        is_non_unique_corporate: result[11],
-        authors_id: result[12],
+        is_non_unique_corporate: result[11]
       }
     }
     .delete_if {|item|
@@ -95,9 +90,8 @@ namespace :harvest do
         time2 = Time.now
         puts '. ' + theme.template_monster_id.inspect
         update_complex_theme_info(theme)
-        copy_categories_to_tags(theme)
 
-        if (upgrade_themes_with_live_preview(theme, screenshot_policy) == true)
+        if (upgrade_themes_with_live_preview(theme, screenshot_policy))
           puts "theme save"
           begin
             theme.save!
@@ -130,7 +124,6 @@ namespace :harvest do
     .map { |r| r.split("@") }
     .map { |result|
         {
-        id: result[0],
         tag_list: parse_list_to_tags(result[17]) + ',' + parse_list_to_tags(result[19]),
         sources: result[20].sub(/^\[/, "").sub(/]$/, "").split(','),
         theme_type: result[21],
