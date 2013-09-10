@@ -112,6 +112,7 @@ namespace :harvest do
           theme.delete
         else
           if (upgrade_themes_with_live_preview(theme, screenshot_policy) == true)
+            puts "theme save"
             theme.save!
             puts "Processing one theme took #{Time.now - time2} s"
           else
