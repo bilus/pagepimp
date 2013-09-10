@@ -11,8 +11,8 @@ namespace :harvest do
     puts 'harvest#run'
 
     start_time = Time.now
-    iterator =  42653 # Theme.maximum(:template_monster_id) || 30000
-    chunk_size = 10
+    iterator =  10000 # Theme.maximum(:template_monster_id) || 30000
+    chunk_size = 500
     items_counter = 0
 
     begin
