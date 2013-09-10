@@ -56,7 +56,7 @@ namespace :harvest do
   def harvest_themes(iterator, chunk_size)
 
     link = prepare_request_link(iterator, chunk_size)
-    puts "Harvest ing " + link
+    puts "Harvesting " + link
     time1 = Time.now
     result = URI.parse(link).read
     puts "API for chunks size #{chunk_size} responded after #{Time.now - time1} s"
