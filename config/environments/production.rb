@@ -1,9 +1,6 @@
 Pagepimp::Application.configure do
   # Settings specified here will take precedence over those in config/application.rb
 
-  # http://www.simonecarletti.com/blog/2012/02/heroku-and-rails-3-2-assetprecompile-error/
-  config.assets.initialize_on_precompile = false
-
   # Code is not reloaded between requests
   config.cache_classes = true
 
