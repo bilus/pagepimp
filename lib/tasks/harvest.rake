@@ -10,23 +10,16 @@ namespace :harvest do
   task :run => :environment do
     puts 'harvest#run'
 
-    @exit_requested = false
-    Kernel.trap("INT") do # Ctrl+C to exit.
-      puts "Waiting for current chunk to finish..."
-      @exit_requested = true
-    end
-
     start_time = Time.now
-
-    iterator =  41513 # Theme.maximum(:template_monster_id) || 30000
-    chunk_size = 100
+    iterator =  42513 # Theme.maximum(:template_monster_id) || 30000
+    chunk_size = 10
     items_counter = 0
 
     begin
       items = harvest_themes(iterator, chunk_size)
       iterator += chunk_size
       items_counter += items.size
-    end until (items.empty? || @exit_requested)
+    end until (items.empty?)
 
     puts "\nHarvested #{items_counter} themes in " + (Time.now - start_time).to_s + "s\n"
   end
@@ -82,11 +75,7 @@ namespace :harvest do
         is_unique_corporate: result[10],
         is_non_unique_corporate: result[11],
         authors_id: result[12],
-        screenshot_list: result[15].sub(/^\{/, "").sub(/}$/, "").split(',')
       }
-    }
-    .map {|item|
-      filter_screenshots(item)
     }
     .delete_if {|item|
         item[:is_adult] == "1" ||
@@ -94,8 +83,7 @@ namespace :harvest do
         item[:is_unique_logo] == "1"  ||
         item[:is_non_unique_logo] == "1" ||
         item[:is_unique_corporate] == "1" ||
-        item[:is_non_unique_corporate] == "1" ||
-        item[:screenshot_list].empty?
+        item[:is_non_unique_corporate] == "1"
     }
     .map{ |item|
       item.except(:is_adult, :is_flash, :is_unique_logo, :is_non_unique_logo, :is_unique_corporate, :is_non_unique_corporate)
@@ -108,20 +96,17 @@ namespace :harvest do
         puts '. ' + theme.template_monster_id.inspect
         update_complex_theme_info(theme)
         copy_categories_to_tags(theme)
-        if (keywords_contains_flash(theme))
-          theme.delete
-        else
-          if (upgrade_themes_with_live_preview(theme, screenshot_policy) == true)
-            puts "theme save"
-            begin
-              theme.save!
-            rescue => e
-              puts e
-            end
-            puts "Processing one theme took #{Time.now - time2} s"
-          else
-            puts "upgrade_themes_with_live_preview(theme, screenshot_policy) returned " + (upgrade_themes_with_live_preview(theme, screenshot_policy) == true).inspect
+
+        if (upgrade_themes_with_live_preview(theme, screenshot_policy) == true)
+          puts "theme save"
+          begin
+            theme.save!
+          rescue => e
+            puts e
           end
+          puts "Processing one theme took #{Time.now - time2} s"
+        else
+          puts "upgrade_themes_with_live_preview(theme, screenshot_policy) returned " + (upgrade_themes_with_live_preview(theme, screenshot_policy) == true).inspect
         end
       end
 
@@ -146,9 +131,7 @@ namespace :harvest do
     .map { |result|
         {
         id: result[0],
-        date_of_addition: result[3],
-        keywords_list: result[17].sub(/^\[/, "").sub(/]$/, "").split(';'),
-        categories_list: result[19].sub(/^\[/, "").sub(/]$/, "").split(';'),
+        tag_list: parse_list_to_tags(result[17]) + ',' + parse_list_to_tags(result[19]),
         sources: result[20].sub(/^\[/, "").sub(/]$/, "").split(','),
         theme_type: result[21],
         description: result[22]
@@ -158,35 +141,28 @@ namespace :harvest do
       theme.sources = item[:sources]
       theme.theme_type = item[:theme_type]
       theme.description = item[:description]
-      theme.keywords_list = item[:keywords_list]
-      theme.categories_list = item[:categories_list]
+      theme.tag_list = item[:tag_list]
     end
   end
 
-  def filter_screenshots(item)
-    item.merge(screenshot_list: item[:screenshot_list].select {|s| valid_screenshot?(s)})
+  def parse_list_to_tags(list)
+    list.sub(/^\[/, "").sub(/]$/, "").split(';').map{ |i| i.downcase}.join(',')
   end
 
-  def valid_screenshot?(url)
-    (url =~ /(\.jpg|\.jpeg|\.png)$/i).present?
-  end
+  #def filter_screenshots(item)
+  #  item.merge(screenshot_list: item[:screenshot_list].select {|s| valid_screenshot?(s)})
+  #end
 
-  def copy_categories_to_tags(theme)
-    tags = theme.categories_list.map{ |i| i.downcase}.join(',')
-    tags += ',' + theme.keywords_list.map{ |i| i.downcase}.join(',')
-    theme.tag_list = tags
-  end
-
-  def keywords_contains_flash(theme)
-    tags = theme.tag_list
-    flash_present = false
-    tags.each{|t| flash_present = true if t.include? "flash"}
-    if flash_present
-      puts "theme #{theme.template_monster_id} contains flash"
-      puts tags.inspect
-    end
-    flash_present
-  end
+  #def keywords_contains_flash(theme)
+  #  tags = theme.tag_list
+  #  flash_present = false
+  #  tags.each{|t| flash_present = true if t.include? "flash"}
+  #  if flash_present
+  #    puts "theme #{theme.template_monster_id} contains flash"
+  #    puts tags.inspect
+  #  end
+  #  flash_present
+  #end
 
   def prepare_request_link(iterator, chunk_size)
     from = iterator

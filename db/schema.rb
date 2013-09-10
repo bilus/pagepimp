@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130910083251) do
+ActiveRecord::Schema.define(:version => 20130910131854) do
 
   create_table "orders", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -40,18 +40,11 @@ ActiveRecord::Schema.define(:version => 20130910083251) do
   create_table "themes", :force => true do |t|
     t.integer  "template_monster_id"
     t.integer  "price"
-    t.string   "screenshot_list"
-    t.integer  "authors_id"
-    t.string   "keywords_list"
-    t.string   "categories_list"
     t.string   "sources"
     t.string   "theme_type"
     t.string   "description"
-    t.string   "pages"
     t.datetime "created_at",                            :null => false
     t.datetime "updated_at",                            :null => false
-    t.integer  "exclusive_price"
-    t.datetime "date_of_addition"
     t.boolean  "active",              :default => true
     t.string   "live_preview_url"
     t.string   "thumbnail_url"

@@ -1,7 +1,7 @@
 require 'open-uri'
 
 class Theme < ActiveRecord::Base
-  attr_accessible :active, :authors_id, :bootstrap, :categories_list, :date_of_addition, :description, :exclusive_price, :foundation, :live_preview_url, :keywords_list, :pages, :price, :screenshot_list, :sources, :template_monster_id, :tag_list, :theme_type, :thumbnail_url, :created_at, :updated_at
+  attr_accessible :active, :bootstrap, :description, :foundation, :live_preview_url, :price, :sources, :template_monster_id, :tag_list, :theme_type, :thumbnail_url, :created_at, :updated_at
 
   scope :visible_for,  lambda { |user|
     if user
@@ -27,11 +27,6 @@ class Theme < ActiveRecord::Base
   accepts_nested_attributes_for :orders
 
   acts_as_taggable
-
-  serialize :pages
-  serialize :screenshot_list
-  serialize :keywords_list
-  serialize :categories_list
 
   def self.next(id)
     scoped.where(["id > ?", id]).first
