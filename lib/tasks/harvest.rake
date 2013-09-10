@@ -11,7 +11,7 @@ namespace :harvest do
     puts 'harvest#run'
 
     start_time = Time.now
-    iterator =  42513 # Theme.maximum(:template_monster_id) || 30000
+    iterator =  42653 # Theme.maximum(:template_monster_id) || 30000
     chunk_size = 10
     items_counter = 0
 
@@ -31,8 +31,13 @@ namespace :harvest do
   end
 
   task :preview => :environment do
-    theme = Theme.new(template_monster_id: ENV["id"])
-    puts find_life_preview_url(theme)
+    theme = Theme.where(id: ENV["id"])
+    if theme.present?
+      puts theme.to_yaml
+      puts find_life_preview_url(theme)
+    else
+      puts "no such theme"
+    end
   end
 
   task :stats => :environment do
