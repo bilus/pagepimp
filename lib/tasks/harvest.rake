@@ -105,15 +105,17 @@ namespace :harvest do
       RubyProf.measure_mode = RubyProf::WALL_TIME
       result = RubyProf.profile do
         time2 = Time.now
-        print '.' + theme.template_monster_id.inspect
+        puts '. ' + theme.template_monster_id.inspect
         update_complex_theme_info(theme)
         copy_categories_to_tags(theme)
         if (keywords_contains_flash(theme))
           theme.delete
         else
-          if (upgrade_themes_with_live_preview(theme, screenshot_policy))
+          if (upgrade_themes_with_live_preview(theme, screenshot_policy) == true)
             theme.save!
             puts "Processing one theme took #{Time.now - time2} s"
+          else
+            puts "upgrade_themes_with_live_preview(theme, screenshot_policy) returned " + (upgrade_themes_with_live_preview(theme, screenshot_policy) == true).inspect
           end
         end
       end
@@ -132,7 +134,6 @@ namespace :harvest do
   end
 
   def update_complex_theme_info(theme)
-    puts "update_complex_theme_info"
     result = URI.parse(prepare_complex_theme_info(theme.template_monster_id)).read
     result
     .split("\r\n")
@@ -201,7 +202,6 @@ namespace :harvest do
   end
 
   def upgrade_themes_with_live_preview(theme, screenshot_policy)
-    puts "Upgrade_themes_with_live_preview"
     time1 = Time.now
     url = find_life_preview_url(theme)
     puts "Nokogiri took " + (Time.now - time1).to_s + " s."
@@ -220,7 +220,6 @@ namespace :harvest do
 
   def find_life_preview_url(theme)
     id = theme.template_monster_id
-    #puts "life prev with id: #{id}"
     begin
       site = open(prepare_life_template_url(id))
       doc = Nokogiri::HTML(site)
