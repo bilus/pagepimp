@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130909123326) do
+ActiveRecord::Schema.define(:version => 20130910083251) do
 
   create_table "orders", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -55,6 +55,8 @@ ActiveRecord::Schema.define(:version => 20130909123326) do
     t.boolean  "active",              :default => true
     t.string   "live_preview_url"
     t.string   "thumbnail_url"
+    t.boolean  "bootstrap"
+    t.boolean  "foundation"
   end
 
   create_table "users", :force => true do |t|

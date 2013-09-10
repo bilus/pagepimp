@@ -18,15 +18,15 @@ namespace :harvest do
 
     start_time = Time.now
 
-    iterator = Theme.maximum(:template_monster_id) || 30000
-    chunk_size = 10
+    iterator =  41513 # Theme.maximum(:template_monster_id) || 30000
+    chunk_size = 100
     items_counter = 0
 
     begin
       items = harvest_themes(iterator, chunk_size)
       iterator += chunk_size
       items_counter += items.size
-    end until (items.empty? || exit_requested)
+    end until (items.empty? || @exit_requested)
 
     puts "\nHarvested #{items_counter} themes in " + (Time.now - start_time).to_s + "s\n"
   end
@@ -102,19 +102,29 @@ namespace :harvest do
     }
     .map{ |item| Theme.new(item) }
     .each{ |theme|
+      RubyProf.measure_mode = RubyProf::WALL_TIME
       result = RubyProf.profile do
         time2 = Time.now
         print '.' + theme.template_monster_id.inspect
         update_complex_theme_info(theme)
         copy_categories_to_tags(theme)
-        upgrade_themes_with_live_preview(theme, screenshot_policy)
-        puts "Processing one theme took #{Time.now - time2} s"
-        theme.save!
+        if (keywords_contains_flash(theme))
+          theme.delete
+        else
+          if (upgrade_themes_with_live_preview(theme, screenshot_policy))
+            theme.save!
+            puts "Processing one theme took #{Time.now - time2} s"
+          end
+        end
       end
 
-      File.open "rubyprof-stack#{theme.template_monster_id}.html", 'w' do |file|
-        RubyProf::CallStackPrinter.new(result).print(file)
-      end
+      #File.open "log/rubyprof-stack#{theme.template_monster_id}.html", 'w' do |file|
+      #  RubyProf::CallStackPrinter.new(result).print(file)
+      #end
+      #
+      #File.open "log/rubyprof-prof#{theme.template_monster_id}.html", 'w' do |file|
+      #  RubyProf::GraphHtmlPrinter.new(result).print(file)
+      #end
 
     }
     # Print a flat profile to text
@@ -161,6 +171,17 @@ namespace :harvest do
     theme.tag_list = tags
   end
 
+  def keywords_contains_flash(theme)
+    tags = theme.tag_list
+    flash_present = false
+    tags.each{|t| flash_present = true if t.include? "flash"}
+    if flash_present
+      puts "theme #{theme.template_monster_id} contains flash"
+      puts tags.inspect
+    end
+    flash_present
+  end
+
   def prepare_request_link(iterator, chunk_size)
     from = iterator
     to = iterator + chunk_size - 1
@@ -188,12 +209,13 @@ namespace :harvest do
     if url
       theme.active = true
       theme.thumbnail_url = screenshot_policy.thumbnail_precache_and_return(url)
-      puts "live preview found at: " + theme.thumbnail_url
+      revise_content_of_Live_preview(theme)
     else
       theme.active = false
       puts "no live preview."
     end
-    puts "Live preview took " + (Time.now - time1).to_s + " s."
+    puts "Live preview processing took " + (Time.now - time1).to_s + " s."
+    theme.active
   end
 
   def find_life_preview_url(theme)
@@ -210,6 +232,21 @@ namespace :harvest do
     end
   end
 
+  def revise_content_of_Live_preview(theme)
+    begin
+      site = open(theme.live_preview_url).read
+      if site.include? ("bootstrap.css" || "bootstrap.min.css")
+        theme.bootstrap = true
+      end
+
+      if site.include? ("foundation.css" || "foundation.min.css")
+        theme.foundation = true
+      end
+
+    rescue
+      puts "Revision of  #{url}  failed"
+    end
+  end
 end
 
 class ScreenshotPolicy

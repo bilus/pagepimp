@@ -10,6 +10,14 @@
       - else
         = link_to "Enable", toggle_active_theme_path(theme), method: :put, remote: true
 
+  -if theme.bootstrap == true
+    .h3
+      Bootstrap
+
+  - if theme.foundation == true
+    .h3
+      Foundation
+
   .thumb
     = link_to image_tag(theme.thumbnail_url, class: "img-polaroid"), theme_path(theme)
   %p
