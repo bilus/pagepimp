@@ -16,3 +16,5 @@
 
 #Ignore rubymine files
 /.idea
+.DS_Store
+/log/*
