@@ -179,8 +179,6 @@ namespace :harvest do
 
   def revise_content_of_Live_preview(theme)
     begin
-      puts "\nRevise_content_of_Live_preview"
-      puts theme.inspect
       site = open(theme.live_preview_url).read
       if site.include? ("bootstrap.css" || "bootstrap.min.css")
         theme.bootstrap = true
@@ -200,7 +198,9 @@ namespace :harvest do
       end
 
     rescue
-      puts "Revision of  #{url}  failed"
+      puts "Revision of  #{theme.live_preview_url} failed. Site disabled."
+      theme.active = false
+      puts theme.inspect
     end
   end
 
