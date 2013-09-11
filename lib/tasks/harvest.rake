@@ -11,7 +11,7 @@ namespace :harvest do
     puts 'harvest#run'
 
     start_time = Time.now
-    iterator =  15000 #Theme.maximum(:template_monster_id) || 15000
+    iterator =  Theme.maximum(:template_monster_id) || 15000
     chunk_size = 500
     items_counter = 0
 
@@ -135,7 +135,7 @@ namespace :harvest do
     .map { |r| r.split("@") }
     .map { |result|
         {
-        tag_list: parse_list_to_tags(result[17]) + ',' + parse_list_to_tags(result[19]),
+        tag_list: parse_lists_to_tags(result[17],result[19]),
         sources: result[20].sub(/^\[/, "").sub(/]$/, "").split(','),
         theme_type: result[21],
         description: result[22]
@@ -149,8 +149,15 @@ namespace :harvest do
     end
   end
 
-  def parse_list_to_tags(list)
-    list.sub(/^\[/, "").sub(/]$/, "").split(';').map{ |i| i.downcase}.join(',')
+  def parse_lists_to_tags(list1, list2)
+    part1 = list1.present? ? list1.sub(/^\[/, "").sub(/]$/, "").split(';').map{ |i| i.downcase}.join(',') : ""
+    part2 = list2.present? ? list2.sub(/^\[/, "").sub(/]$/, "").split(';').map{ |i| i.downcase}.join(',') : ""
+
+    if part1.empty?
+      part2.empty? ? "" : part2
+    else
+      part1 += part2.empty? ? "" : ( ',' + part2)
+    end
   end
 
   #def filter_screenshots(item)
