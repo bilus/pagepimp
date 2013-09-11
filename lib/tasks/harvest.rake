@@ -11,15 +11,21 @@ namespace :harvest do
     puts 'harvest#run'
 
     start_time = Time.now
-    iterator =  Theme.maximum(:template_monster_id) || 15000
+    iterator =  15000 #Theme.maximum(:template_monster_id) || 15000
     chunk_size = 500
     items_counter = 0
+
+    @exit_requested = false
+    Kernel.trap("INT") do # Ctrl+C to exit.
+      puts "Waiting for current chunk to finish..."
+      @exit_requested = true
+    end
 
     begin
       items = harvest_themes(iterator, chunk_size)
       iterator += chunk_size
       items_counter += items.size
-    end until (items.empty?)
+    end until (items.empty? || @exit_requested)
 
     puts "\nHarvested #{items_counter} themes in " + (Time.now - start_time).to_s + "s\n"
   end
@@ -97,15 +103,15 @@ namespace :harvest do
         update_complex_theme_info(theme)
 
         if (upgrade_themes_with_live_preview(theme, screenshot_policy))
-          print "- theme saved"
+          print "- theme saved   "
           begin
             theme.save!
           rescue => e
             puts e
           end
-          puts "Processing one theme took #{Time.now - time2} s"
+          print " - total time %.3f s\n" % (Time.now - time2)
         else
-          print "- not saved  "
+          print "- not saved  \n"
         end
       #end
 
@@ -183,7 +189,7 @@ namespace :harvest do
   def upgrade_themes_with_live_preview(theme, screenshot_policy)
     time1 = Time.now
     url = find_life_preview_url(theme)
-    print " - Nokogiri " + (Time.now - time1).to_s + " s."
+    print " - Nokogiri %.3f s" % (Time.now - time1)
     theme.live_preview_url = url
     if url
       theme.active = true
@@ -192,9 +198,9 @@ namespace :harvest do
       revise_content_of_Live_preview(theme)
     else
       theme.active = false
-      print "- no live preview"
+      print " - no live preview"
     end
-    puts " - it took " + (Time.now - time1).to_s + " s."
+    print " - it took %.3f s" % (Time.now - time1)
     theme.active
   end
 
