@@ -1,7 +1,7 @@
 require 'open-uri'
 require 'nokogiri'
 require 'url2png'
-require 'ruby-prof'
+#require 'ruby-prof'
 
 namespace :harvest do
 
@@ -11,7 +11,7 @@ namespace :harvest do
     puts 'harvest#run'
 
     start_time = Time.now
-    iterator =  10000 # Theme.maximum(:template_monster_id) || 30000
+    iterator =  Theme.maximum(:template_monster_id) || 15000
     chunk_size = 500
     items_counter = 0
 
@@ -91,13 +91,13 @@ namespace :harvest do
     .map{ |item| Theme.new(item) }
     .each{ |theme|
       RubyProf.measure_mode = RubyProf::WALL_TIME
-      result = RubyProf.profile do
+      #result = RubyProf.profile do
         time2 = Time.now
-        puts '. ' + theme.template_monster_id.inspect
+        print '- ' + theme.template_monster_id.inspect
         update_complex_theme_info(theme)
 
         if (upgrade_themes_with_live_preview(theme, screenshot_policy))
-          puts "theme save"
+          print "- theme saved"
           begin
             theme.save!
           rescue => e
@@ -105,9 +105,9 @@ namespace :harvest do
           end
           puts "Processing one theme took #{Time.now - time2} s"
         else
-          puts "upgrade_themes_with_live_preview(theme, screenshot_policy) returned " + (upgrade_themes_with_live_preview(theme, screenshot_policy) == true).inspect
+          print "- not saved  "
         end
-      end
+      #end
 
       #File.open "log/rubyprof-stack#{theme.template_monster_id}.html", 'w' do |file|
       #  RubyProf::CallStackPrinter.new(result).print(file)
@@ -183,17 +183,18 @@ namespace :harvest do
   def upgrade_themes_with_live_preview(theme, screenshot_policy)
     time1 = Time.now
     url = find_life_preview_url(theme)
-    puts "Nokogiri took " + (Time.now - time1).to_s + " s."
+    print " - Nokogiri " + (Time.now - time1).to_s + " s."
     theme.live_preview_url = url
     if url
       theme.active = true
       theme.thumbnail_url = screenshot_policy.thumbnail_precache_and_return(url)
+      print " - live preview ok"
       revise_content_of_Live_preview(theme)
     else
       theme.active = false
-      puts "no live preview."
+      print "- no live preview"
     end
-    puts "Live preview processing took " + (Time.now - time1).to_s + " s."
+    puts " - it took " + (Time.now - time1).to_s + " s."
     theme.active
   end
 
@@ -205,7 +206,6 @@ namespace :harvest do
       url = doc.css('#iframelive').css('#frame')
       url[0]["src"] if url.present?
     rescue OpenURI::HTTPError => ex
-      puts "Live_preview 404 for #{id}"
       nil
     end
   end
