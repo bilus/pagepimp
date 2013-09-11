@@ -192,7 +192,7 @@ namespace :harvest do
         theme.active = true
       end
 
-      if site.include? ("application/x-shockwave-flash")
+      if site.include? ("application/x-shockwave-flash" || "FlashObject")
         theme.flash = true
         theme.active = false
       end
