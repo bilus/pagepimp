@@ -15,7 +15,7 @@
           %h3
             Item
 
-          %img{src: @theme.screenshot_list[1], width: 107, height: 83 }
+          %img{src: @theme.thumbnail_url, width: 107, height: 83 }
           Theme
           = @theme.id
           custom development
@@ -29,7 +29,7 @@
           %p
             .field
               = f.label "Comment"
-              = f.text_area :comment
+              = f.text_area :comment , rows: 5
 
       .span4
         .pricing_summary
