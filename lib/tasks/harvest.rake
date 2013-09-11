@@ -161,7 +161,7 @@ namespace :harvest do
       print " - no live preview"
     end
     print " - it took %.3f s" % (Time.now - time1)
-    theme.active
+    url.present?
   end
 
   def find_life_preview_url(theme)
@@ -172,7 +172,6 @@ namespace :harvest do
       url = doc.css('#iframelive').css('#frame')
       url[0]["src"] if url.present?
     rescue OpenURI::HTTPError => ex
-      puts ex
       nil
     end
   end
