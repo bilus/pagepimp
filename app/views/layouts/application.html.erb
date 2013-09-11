@@ -25,15 +25,13 @@
               <li><%= link_to "Manage orders", orders_path %></li>
               <% end %>
             </ul>
-            <ul class="nav pull-right">
-              <li>
-                <% if user_signed_in? %>
-                    <%= link_to "Logout #{current_user.email}", destroy_user_session_path, method: :delete %>
-                <% else %>
-                    <%= link_to "Login", new_user_session_path %>
-                <% end %>
-              </li>
-            </ul>
+            <% if user_signed_in? %>
+              <ul class="nav pull-right">
+                <li>
+                  <%= link_to "Logout #{current_user.email}", destroy_user_session_path, method: :delete %>
+                </li>
+              </ul>
+            <% end %>
           </div>
         </div>
       </div>
