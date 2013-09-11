@@ -154,8 +154,6 @@ namespace :harvest do
     url = find_life_preview_url(theme)
     print " - Nokogiri %.3f s" % (Time.now - time1)
     theme.live_preview_url = url
-    puts theme.inspect
-    puts "URL: " + url.inspect
     if url
       theme.active = true
       theme.thumbnail_url = screenshot_policy.thumbnail_precache_and_return(url)
@@ -177,12 +175,15 @@ namespace :harvest do
       url = doc.css('#iframelive').css('#frame')
       url[0]["src"] if url.present?
     rescue OpenURI::HTTPError => ex
+      puts ex
       nil
     end
   end
 
   def revise_content_of_Live_preview(theme)
     begin
+      puts "revise_content_of_Live_preview"
+      puts theme.inspect
       site = open(theme.live_preview_url).read
       if site.include? ("bootstrap.css" || "bootstrap.min.css")
         theme.bootstrap = true
