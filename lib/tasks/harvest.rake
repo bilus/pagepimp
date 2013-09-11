@@ -12,7 +12,7 @@ namespace :harvest do
 
     start_time = Time.now
     iterator =  Theme.maximum(:template_monster_id) || 15000
-    chunk_size = 500
+    chunk_size = 100
     items_counter = 0
 
     @exit_requested = false
