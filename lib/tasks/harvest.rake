@@ -160,21 +160,6 @@ namespace :harvest do
     end
   end
 
-  #def filter_screenshots(item)
-  #  item.merge(screenshot_list: item[:screenshot_list].select {|s| valid_screenshot?(s)})
-  #end
-
-  #def keywords_contains_flash(theme)
-  #  tags = theme.tag_list
-  #  flash_present = false
-  #  tags.each{|t| flash_present = true if t.include? "flash"}
-  #  if flash_present
-  #    puts "theme #{theme.template_monster_id} contains flash"
-  #    puts tags.inspect
-  #  end
-  #  flash_present
-  #end
-
   def prepare_request_link(iterator, chunk_size)
     from = iterator
     to = iterator + chunk_size - 1
@@ -228,10 +213,12 @@ namespace :harvest do
       site = open(theme.live_preview_url).read
       if site.include? ("bootstrap.css" || "bootstrap.min.css")
         theme.bootstrap = true
+        theme.tag_list.add("bootstrap")
       end
 
       if site.include? ("foundation.css" || "foundation.min.css")
         theme.foundation = true
+        theme.tag_list.add("foundation")
       end
 
     rescue
