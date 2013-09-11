@@ -149,40 +149,13 @@ namespace :harvest do
     end
   end
 
-  def parse_lists_to_tags(list1, list2)
-    part1 = list1.present? ? list1.sub(/^\[/, "").sub(/]$/, "").split(';').map{ |i| i.downcase}.join(',') : ""
-    part2 = list2.present? ? list2.sub(/^\[/, "").sub(/]$/, "").split(';').map{ |i| i.downcase}.join(',') : ""
-
-    if part1.empty?
-      part2.empty? ? "" : part2
-    else
-      part1 += part2.empty? ? "" : ( ',' + part2)
-    end
-  end
-
-  def prepare_request_link(iterator, chunk_size)
-    from = iterator
-    to = iterator + chunk_size - 1
-    "http://www.templatemonster.com/webapi/templates_screenshots4.php?delim=;&from=#{from}&to=#{to}&full_path=true#{credentials}"
-  end
-
-  def prepare_complex_theme_info(theme_id)
-    "http://www.templatemonster.com/webapi/template_info3.php?delim=@&template_number=#{theme_id}&list_delim=;&list_begin=[&list_end=]#{credentials}"
-  end
-
-  def prepare_life_template_url(theme_id)
-    "http://www.templatemonster.com/demo/#{theme_id}.html"
-  end
-
-  def credentials
-    "&login=criticue&webapipassword=c0931ab33ff801e711b00bb3c5e9af1e"
-  end
-
   def upgrade_themes_with_live_preview(theme, screenshot_policy)
     time1 = Time.now
     url = find_life_preview_url(theme)
     print " - Nokogiri %.3f s" % (Time.now - time1)
     theme.live_preview_url = url
+    puts theme.inspect
+    puts "URL: " + url.inspect
     if url
       theme.active = true
       theme.thumbnail_url = screenshot_policy.thumbnail_precache_and_return(url)
@@ -224,6 +197,35 @@ namespace :harvest do
     rescue
       puts "Revision of  #{url}  failed"
     end
+  end
+
+  def parse_lists_to_tags(list1, list2)
+    part1 = list1.present? ? list1.sub(/^\[/, "").sub(/]$/, "").split(';').map{ |i| i.downcase}.join(',') : ""
+    part2 = list2.present? ? list2.sub(/^\[/, "").sub(/]$/, "").split(';').map{ |i| i.downcase}.join(',') : ""
+
+    if part1.empty?
+      part2.empty? ? "" : part2
+    else
+      part1 += part2.empty? ? "" : ( ',' + part2)
+    end
+  end
+
+  def prepare_request_link(iterator, chunk_size)
+    from = iterator
+    to = iterator + chunk_size - 1
+    "http://www.templatemonster.com/webapi/templates_screenshots4.php?delim=;&from=#{from}&to=#{to}&full_path=true#{credentials}"
+  end
+
+  def prepare_complex_theme_info(theme_id)
+    "http://www.templatemonster.com/webapi/template_info3.php?delim=@&template_number=#{theme_id}&list_delim=;&list_begin=[&list_end=]#{credentials}"
+  end
+
+  def prepare_life_template_url(theme_id)
+    "http://www.templatemonster.com/demo/#{theme_id}.html"
+  end
+
+  def credentials
+    "&login=criticue&webapipassword=c0931ab33ff801e711b00bb3c5e9af1e"
   end
 end
 
