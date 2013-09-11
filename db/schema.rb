@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20130910143711) do
+ActiveRecord::Schema.define(:version => 20130911115259) do
 
   create_table "orders", :force => true do |t|
     t.datetime "created_at", :null => false
@@ -50,6 +50,7 @@ ActiveRecord::Schema.define(:version => 20130910143711) do
     t.string   "thumbnail_url"
     t.boolean  "bootstrap"
     t.boolean  "foundation"
+    t.boolean  "flash"
   end
 
   create_table "users", :force => true do |t|

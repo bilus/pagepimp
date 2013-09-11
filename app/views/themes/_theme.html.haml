@@ -18,6 +18,10 @@
         %span
           Foundation
 
+      - if theme.flash == true
+        %span
+          Flash
+
   .thumb
     = link_to image_tag(theme.thumbnail_url, class: "img-polaroid"), theme_path(theme)
   %p

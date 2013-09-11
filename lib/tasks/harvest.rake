@@ -75,7 +75,6 @@ namespace :harvest do
       {
         template_monster_id: result[0],
         price: result[1],
-        is_flash: result[6],
         is_adult: result[7],
         is_unique_logo: result[8],
         is_non_unique_logo: result[9],
@@ -85,7 +84,6 @@ namespace :harvest do
     }
     .delete_if {|item|
         item[:is_adult] == "1" ||
-        item[:is_flash] == "1" ||
         item[:is_unique_logo] == "1"  ||
         item[:is_non_unique_logo] == "1" ||
         item[:is_unique_corporate] == "1" ||
@@ -155,7 +153,6 @@ namespace :harvest do
     print " - Nokogiri %.3f s" % (Time.now - time1)
     theme.live_preview_url = url
     if url
-      theme.active = true
       theme.thumbnail_url = screenshot_policy.thumbnail_precache_and_return(url)
       print " - live preview ok"
       revise_content_of_Live_preview(theme)
@@ -182,17 +179,24 @@ namespace :harvest do
 
   def revise_content_of_Live_preview(theme)
     begin
-      puts "revise_content_of_Live_preview"
+      puts "\nRevise_content_of_Live_preview"
       puts theme.inspect
       site = open(theme.live_preview_url).read
       if site.include? ("bootstrap.css" || "bootstrap.min.css")
         theme.bootstrap = true
         theme.tag_list.add("bootstrap")
+        theme.active = true
       end
 
       if site.include? ("foundation.css" || "foundation.min.css")
         theme.foundation = true
         theme.tag_list.add("foundation")
+        theme.active = true
+      end
+
+      if site.include? ("application/x-shockwave-flash")
+        theme.flash = true
+        theme.active = false
       end
 
     rescue

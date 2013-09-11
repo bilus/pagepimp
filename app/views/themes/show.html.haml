@@ -54,6 +54,19 @@
           $
           = @theme.price
 
+        -if theme.bootstrap == true
+          %span
+            Bootstrap
+
+        - if theme.foundation == true
+          %span
+            Foundation
+
+        - if theme.flash == true
+          %span
+            Flash
+
+
 
 - if (@theme.live_preview_url.present?)
   .row
