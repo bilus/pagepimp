@@ -9,7 +9,7 @@
 
   - @orders.each do |order|
     %tr
-      %td= order.id
+      %td= link_to "#{order.id}", order_path(order, theme_id: order.theme_id)
       %td= link_to "#{order.theme_id}", theme_path(order.theme_id)
       %td= order.comment
       %td= link_to 'Destroy', order, :method => :delete, :data => { :confirm => 'Are you sure?' }
