@@ -43,12 +43,16 @@
 
       - if user_signed_in?
         - if @theme.active?
-          = link_to "Disable", toggle_active_theme_path(@theme), method: :put, remote: true
+          = link_to "Disable", toggle_active_theme_path(@theme), method: :put, remote: true, class: "btn btn-warning"
         - else
-          = link_to "Enable", toggle_active_theme_path(@theme), method: :put, remote: true
+          = link_to "Enable", toggle_active_theme_path(@theme), method: :put, remote: true, class: "btn btn-primary"
 
-        = link_to "< Prev", previous_theme_path(@theme)
-        = link_to "Next >", next_theme_path(@theme)
+        = link_to "< Prev", previous_theme_path(@theme), class: "btn btn-info"
+        = link_to "Next >", next_theme_path(@theme), class: "btn btn-info"
+
+        %strong
+          $
+          = @theme.price
 
 
 - if (@theme.live_preview_url.present?)
