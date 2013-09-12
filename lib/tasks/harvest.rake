@@ -55,16 +55,27 @@ namespace :harvest do
   end
 
   task :type_update => :environment do
-    themes_to_revise = Theme.active
-    all = themes_to_revise.count
-    puts "#{all} themes to revise"
-    i = 1
-    themes_to_revise.each do |theme|
-      revise_content_of_Live_preview(theme)
-      print "\r #{i}  =>  %.2f %" % (i.to_f/all*100).to_f
-      theme.save!
-      i+=1
+    if (ENV["from"].present? && ENV["to"].present?)
+      themes_to_revise = Theme.active.find(Array(ENV["from"]..ENV["to"]))
+    else
+      themes_to_revise = ENV["id"].present? ? Theme.find(ENV["id"]) : Theme.active
     end
+
+    i = 1
+    if themes_to_revise.respond_to?(:each)
+      puts "#{themes_to_revise.count} themes to revise"
+      themes_to_revise.each do |theme|
+        revise_content_of_Live_preview(theme)
+        print "\r #{i}  - ID = #{theme.id} =>  %.2f %" % (i.to_f/all*100).to_f
+        theme.save!
+        i+=1
+      end
+    else
+      puts "Revision of theme #{themes_to_revise.id}"
+      revise_content_of_Live_preview(themes_to_revise)
+      themes_to_revise.save!
+    end
+
 
   end
 
