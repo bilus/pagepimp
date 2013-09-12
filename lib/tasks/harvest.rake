@@ -63,7 +63,8 @@ namespace :harvest do
 
     i = 1
     if themes_to_revise.respond_to?(:each)
-      puts "#{themes_to_revise.count} themes to revise"
+      all = themes_to_revise.count
+      puts "#{all} themes to revise"
       themes_to_revise.each do |theme|
         revise_content_of_Live_preview(theme)
         print "\r #{i}  - ID = #{theme.id} =>  %.2f %" % (i.to_f/all*100).to_f
