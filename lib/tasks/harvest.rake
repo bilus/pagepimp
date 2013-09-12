@@ -11,7 +11,7 @@ namespace :harvest do
     puts 'harvest#run'
 
     start_time = Time.now
-    iterator =  Theme.maximum(:template_monster_id) || 15000
+    iterator =  30759 # Theme.maximum(:template_monster_id) || 15000
     chunk_size = 100
     items_counter = 0
 
@@ -204,19 +204,19 @@ namespace :harvest do
   def revise_content_of_Live_preview(theme)
     begin
       site = open(theme.live_preview_url).read
-      if site.include? ("bootstrap.css" || "bootstrap.min.css")
+      if (site =~ /bootstrap.css/ ||  site =~ /bootstrap.min.css/)
         theme.bootstrap = true
         theme.tag_list.add("bootstrap")
         theme.active = true
       end
 
-      if site.include? ("foundation.css" || "foundation.min.css")
+      if (site =~ /foundation.css/ || site =~ /foundation.min.css/)
         theme.foundation = true
         theme.tag_list.add("foundation")
         theme.active = true
       end
 
-      if site.include? ("application/x-shockwave-flash" || "FlashObject")
+      if (site =~ /application\/x-shockwave-flash/ ||  site =~ /FlashObject/ || theme.sources.first =~ /SWF/)
         theme.flash = true
         theme.active = false
       end
