@@ -11,7 +11,7 @@ namespace :harvest do
     puts 'harvest#run'
 
     start_time = Time.now
-    iterator =  30759 # Theme.maximum(:template_monster_id) || 15000
+    iterator =  Theme.maximum(:template_monster_id) || 15000
     chunk_size = 100
     items_counter = 0
 
@@ -148,8 +148,6 @@ namespace :harvest do
       #end
 
     }
-    # Print a flat profile to text
-
   end
 
   def update_complex_theme_info(theme)
@@ -197,7 +195,7 @@ namespace :harvest do
       doc = Nokogiri::HTML(site)
       url = doc.css('#iframelive').css('#frame')
       url[0]["src"] if url.present?
-    rescue OpenURI::HTTPError => ex
+    rescue # OpenURI::HTTPError => ex
       nil
     end
   end
