@@ -16,7 +16,7 @@ class ThemesController < ApplicationController
     respond_to do |format|
       format.html # index.html.erb
       format.json { render json: @themes }
-      format.js
+      # format.js
     end
   end
 
